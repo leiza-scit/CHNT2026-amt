@@ -2,6 +2,18 @@
 
 All notable changes are recorded here. Each entry says **what** changed and **why**; the German *Warum* lines are the short rationale for the team.
 
+## [0.3.0] - Weight rule, hextuple, three real chains
+
+### Added
+- **`py/weights.py`**: the weight rule of the source paper, `1 / (n_questionmark + n_possibilities)`, with the FW type (`UncertainValue`, `VagueValue`, `FuzzinessWobblinessValue`) per pattern and relation, and a lossless round trip from edges back to the string. 15 cases in `data/weight-cases.csv`. *Warum:* Die Berechnung ist klar und soll ausführbar festgehalten sein, auch für den späteren Roundtrip mit den AFE-Daten.
+- **Hextuple**: every weighted statement carries `amt:type` and `amt:method` besides the four elements of the quadruple (proposal). `ontology/fw-method-draft.ttl` is the draft of the method resource for the FW ontology.
+- **Step `chains`**: three real chains from the CHNT data (`data/chains-source.csv`) as hextuples in `dist/chains.ttl`, reasoned under M1 with product and Goedel and under the new model M2 (`ontology/variant-b-derived.ttl`, carrier-centre derived from the actor). The exported centre weights are checked against the rule. *Warum:* Das Modell zeigt jetzt an echten Fällen, was es ableitet, und macht die Doppelzählung bei geerbten Aussagen sichtbar.
+- **Docs**: page *Chains*, sections *How the weight is computed* and *From quadruple to hextuple* on the Weights page, figure `05_chains`, seven new review questions (8 to 14).
+
+### Changed
+- `amt:logic` of the three role chains is `amt:ProductLogic` (was the placeholder `amt:GoedelLogic`), as in the role-chain axioms of the source paper. *Warum:* Das Paper nutzt ProductLogic; Gödel bleibt als Vergleich im Chains-Lauf.
+- The weight conventions on the Weights page now follow the rule (AND keeps the full weight, OR shares it, a question mark counts as one more possibility); the earlier recommendation of un-normalised alternatives is replaced.
+
 ## [0.2.0] - Reasoning properties described, inverses for the derived roles, documentation
 
 ### Added

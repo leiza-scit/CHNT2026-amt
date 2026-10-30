@@ -175,9 +175,9 @@ The weight of the antecedent edge is copied to the inverse edge.
 
 | Axiom | Antecedents (in order) | Consequent | Logic |
 |---|---|---|---|
-| `RCA_carrierToActor` | `hasProductionCentre o hasWorker` | `carrierToActor` | `GoedelLogic` (placeholder) |
-| `RCA_potformToActor` | `isTypeOf o hasProductionCentre o hasWorker` | `potformToActor` | `GoedelLogic` (placeholder) |
-| `RCA_potformToCentre` | `isTypeOf o hasProductionCentre` | `potformToCentre` | `GoedelLogic` (placeholder) |
+| `RCA_carrierToActor` | `hasProductionCentre o hasWorker` | `carrierToActor` | `ProductLogic` (proposal) |
+| `RCA_potformToActor` | `isTypeOf o hasProductionCentre o hasWorker` | `potformToActor` | `ProductLogic` (proposal) |
+| `RCA_potformToCentre` | `isTypeOf o hasProductionCentre` | `potformToCentre` | `ProductLogic` (proposal) |
 
 ### Subsumption axioms
 

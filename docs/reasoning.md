@@ -56,8 +56,8 @@ Source: [PNG](diagrams/04_reasoning_both.png) · drawn by `py/step_diagrams.py` 
 ## A worked chain
 
 One abstract individual per concept. Only the three weighted edges of the source direction are asserted;
-everything else below is derived. The weights are arbitrary placeholders, and the logic operator is
-`GoedelLogic` (minimum) as a placeholder: the chain is as strong as its weakest link.
+everything else below is derived. The weights are arbitrary toy values, and the logic operator is
+`ProductLogic`: a chain is as strong as the product of its links.
 
 ![Toy chain](diagrams/03_toy_reasoning.svg)
 
@@ -71,18 +71,18 @@ Source: [PNG](diagrams/03_toy_reasoning.png) · drawn by `py/step_diagrams.py` f
 | `Centre_1` --`hasWorker`--> `Actor_1` | 0.80 | `INV_worksAt` |
 | `Centre_1` --`isProductionCentreOf`--> `Carrier_1` | 0.60 | `INV_hasProductionCentre` |
 | `Potform_1` --`isTypeOf`--> `Carrier_1` | 0.90 | `INV_hasType` |
-| `Carrier_1` --`carrierToActor`--> `Actor_1` | 0.60 | `RCA_carrierToActor` |
-| `Potform_1` --`potformToActor`--> `Actor_1` | 0.60 | `RCA_potformToActor` |
-| `Potform_1` --`potformToCentre`--> `Centre_1` | 0.60 | `RCA_potformToCentre` |
-| `Actor_1` --`actorToCarrier`--> `Carrier_1` | 0.60 | `INV_carrierToActor` |
-| `Actor_1` --`actorToPotform`--> `Potform_1` | 0.60 | `INV_potformToActor` |
-| `Centre_1` --`centreToPotform`--> `Potform_1` | 0.60 | `INV_potformToCentre` |
-| `Carrier_1` --`reaches`--> `Actor_1` | 0.60 | `SUB_carrierToActor` |
-| `Potform_1` --`reaches`--> `Actor_1` | 0.60 | `SUB_potformToActor` |
-| `Potform_1` --`reaches`--> `Centre_1` | 0.60 | `SUB_potformToCentre` |
-| `Actor_1` --`reachedBy`--> `Carrier_1` | 0.60 | `INV_reaches` |
-| `Actor_1` --`reachedBy`--> `Potform_1` | 0.60 | `INV_reaches` |
-| `Centre_1` --`reachedBy`--> `Potform_1` | 0.60 | `INV_reaches` |
+| `Carrier_1` --`carrierToActor`--> `Actor_1` | 0.48 | `RCA_carrierToActor` |
+| `Potform_1` --`potformToActor`--> `Actor_1` | 0.43 | `RCA_potformToActor` |
+| `Potform_1` --`potformToCentre`--> `Centre_1` | 0.54 | `RCA_potformToCentre` |
+| `Actor_1` --`actorToCarrier`--> `Carrier_1` | 0.48 | `INV_carrierToActor` |
+| `Actor_1` --`actorToPotform`--> `Potform_1` | 0.43 | `INV_potformToActor` |
+| `Centre_1` --`centreToPotform`--> `Potform_1` | 0.54 | `INV_potformToCentre` |
+| `Carrier_1` --`reaches`--> `Actor_1` | 0.48 | `SUB_carrierToActor` |
+| `Potform_1` --`reaches`--> `Actor_1` | 0.43 | `SUB_potformToActor` |
+| `Potform_1` --`reaches`--> `Centre_1` | 0.54 | `SUB_potformToCentre` |
+| `Actor_1` --`reachedBy`--> `Carrier_1` | 0.48 | `INV_reaches` |
+| `Actor_1` --`reachedBy`--> `Potform_1` | 0.43 | `INV_reaches` |
+| `Centre_1` --`reachedBy`--> `Potform_1` | 0.54 | `INV_reaches` |
 
 ## What the reasoning does and does not do
 

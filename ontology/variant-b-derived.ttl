@@ -1,0 +1,71 @@
+@prefix amt:  <http://academic-meta-tool.xyz/vocab#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix mini: <http://example.org/mini-amt/> .
+
+# =============================================================================
+# Variant M2: the carrier-centre link is derived, not asserted
+# =============================================================================
+#
+# In the source paper the weighted statements are the potter at a centre
+# (approach A) and the carrier with a potform (approach C). That a carrier
+# has a vague relation to a centre (approach B) "follows from approach A":
+# the stamp names the potter, and the potter worked at the centre.
+#
+# M2 models exactly that. The carrier-potter link (createdBy) is crisp
+# (weight 1.0); hasProductionCentre is not asserted but derived as
+# carrierToCentre = createdBy o worksAt. It exists to be compared with the
+# main model M1 (ontology/mini-amt.ttl, where hasProductionCentre is asserted
+# as in the data export). It reuses the role names hasType, worksAt and
+# hasWorker of M1 and carries no documentation annotations.
+# =============================================================================
+
+<http://example.org/mini-amt/variant-b-derived> a owl:Ontology ;
+    rdfs:label "Mini-AMT variant M2: carrier-centre derived from the actor"@en .
+
+mini:Potform            a amt:Concept ; rdfs:label "Potform" .
+mini:InformationCarrier a amt:Concept ; rdfs:label "InformationCarrier" .
+mini:ProductionCentre   a amt:Concept ; rdfs:label "ProductionCentre" .
+mini:Actor              a amt:Concept ; rdfs:label "Actor" .
+
+# asserted
+mini:hasType   a amt:Role ; rdfs:label "hasType"   ; rdfs:domain mini:InformationCarrier ; rdfs:range mini:Potform .
+mini:createdBy a amt:Role ; rdfs:label "createdBy" ; rdfs:domain mini:InformationCarrier ; rdfs:range mini:Actor .
+mini:worksAt   a amt:Role ; rdfs:label "worksAt"   ; rdfs:domain mini:Actor ; rdfs:range mini:ProductionCentre .
+# inverses
+mini:isTypeOf  a amt:Role ; rdfs:label "isTypeOf"  ; rdfs:domain mini:Potform ; rdfs:range mini:InformationCarrier .
+mini:creates   a amt:Role ; rdfs:label "creates"   ; rdfs:domain mini:Actor ; rdfs:range mini:InformationCarrier .
+mini:hasWorker a amt:Role ; rdfs:label "hasWorker" ; rdfs:domain mini:ProductionCentre ; rdfs:range mini:Actor .
+# derived
+mini:carrierToCentre  a amt:Role ; rdfs:label "carrierToCentre"  ; rdfs:domain mini:InformationCarrier ; rdfs:range mini:ProductionCentre .
+mini:centreToCarrier  a amt:Role ; rdfs:label "centreToCarrier"  ; rdfs:domain mini:ProductionCentre ; rdfs:range mini:InformationCarrier .
+mini:potformToActor   a amt:Role ; rdfs:label "potformToActor"   ; rdfs:domain mini:Potform ; rdfs:range mini:Actor .
+mini:actorToPotform   a amt:Role ; rdfs:label "actorToPotform"   ; rdfs:domain mini:Actor ; rdfs:range mini:Potform .
+mini:potformToCentre  a amt:Role ; rdfs:label "potformToCentre"  ; rdfs:domain mini:Potform ; rdfs:range mini:ProductionCentre .
+mini:centreToPotform  a amt:Role ; rdfs:label "centreToPotform"  ; rdfs:domain mini:ProductionCentre ; rdfs:range mini:Potform .
+
+mini:INV_hasType a amt:InverseAxiom ; amt:antecedent mini:hasType ; amt:inverse mini:isTypeOf .
+mini:INV_createdBy a amt:InverseAxiom ; amt:antecedent mini:createdBy ; amt:inverse mini:creates .
+mini:INV_worksAt a amt:InverseAxiom ; amt:antecedent mini:worksAt ; amt:inverse mini:hasWorker .
+mini:INV_carrierToCentre a amt:InverseAxiom ; amt:antecedent mini:carrierToCentre ; amt:inverse mini:centreToCarrier .
+mini:INV_potformToActor a amt:InverseAxiom ; amt:antecedent mini:potformToActor ; amt:inverse mini:actorToPotform .
+mini:INV_potformToCentre a amt:InverseAxiom ; amt:antecedent mini:potformToCentre ; amt:inverse mini:centreToPotform .
+
+mini:RCA_carrierToCentre a amt:RoleChainAxiom ;
+    rdfs:label "createdBy o worksAt -> carrierToCentre" ;
+    amt:antecedents ( mini:createdBy mini:worksAt ) ;
+    amt:consequent  mini:carrierToCentre ;
+    amt:logic       amt:ProductLogic .
+
+mini:RCA_potformToActor a amt:RoleChainAxiom ;
+    rdfs:label "isTypeOf o createdBy -> potformToActor" ;
+    amt:antecedents ( mini:isTypeOf mini:createdBy ) ;
+    amt:consequent  mini:potformToActor ;
+    amt:logic       amt:ProductLogic .
+
+mini:RCA_potformToCentre a amt:RoleChainAxiom ;
+    rdfs:label "isTypeOf o createdBy o worksAt -> potformToCentre" ;
+    amt:antecedents ( mini:isTypeOf mini:createdBy mini:worksAt ) ;
+    amt:consequent  mini:potformToCentre ;
+    amt:logic       amt:ProductLogic .

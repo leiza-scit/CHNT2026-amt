@@ -51,7 +51,7 @@ def main() -> int:
         w.writerows(rows)
 
     lines = ["# Reasoning report (toy chain, reference reasoner)", "",
-             "Logic operator of all role chains: placeholder (see ontology).", "",
+             "Logic operator of all role chains: as set in the ontology (product).", "",
              "| Derived edge | Weight | Axiom |", "|---|---|---|"]
     for role, a, b, wgt, kind, prov in rows:
         if role in ("potformToCentre", "carrierToActor", "potformToActor", "reaches"):

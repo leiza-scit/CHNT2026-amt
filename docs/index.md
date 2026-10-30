@@ -6,9 +6,10 @@ title: Overview
 
 # Mini-AMT: Potform, carrier, centre, actor
 
-> **Status: draft for archaeological review.** The namespace, the logic operator and all weights
-> are placeholders. The role names are proposals, except `hasType` / `isTypeOf`, which were agreed
-> with Allard Mees. No real instances are modelled yet.
+> **Status: draft for archaeological review.** The namespace is a placeholder. The weights follow the
+> rule of the source paper (see Weights). The logic operator (product) and the role names are proposals,
+> except `hasType` / `isTypeOf`, which were agreed with Allard Mees. Three real chains from the CHNT data
+> are modelled (see Chains).
 
 A deliberately small [AMT](http://academic-meta-tool.xyz/) domain model for one chain:
 
@@ -38,7 +39,8 @@ Source: [PNG](diagrams/01_simple_model.png) · drawn by `py/step_diagrams.py` fr
 | [Model](model.html) | The concepts, the simple view and the full semantics |
 | [Vocabulary](vocabulary.html) | Every concept, role and axiom: definition, what it does not say, inverse |
 | [Reasoning](reasoning.html) | Why inverses are needed, the reasoning properties read from both ends, a worked chain |
-| [Weights](weights.html) | Is `amt:weight` the same in both directions? |
+| [Chains](chains.html) | Three real chains from the CHNT data: weights, FW types, derived degrees, two models |
+| [Weights](weights.html) | How the weight is computed, the hextuple, and: is `amt:weight` the same in both directions? |
 | [Review](review.html) | Questions for the archaeological review |
 
 ## Files
@@ -47,6 +49,8 @@ Source: [PNG](diagrams/01_simple_model.png) · drawn by `py/step_diagrams.py` fr
 |---|---|
 | [`ontology/mini-amt.ttl`](https://github.com/leiza-scit/CHNT2026-amt/blob/main/ontology/mini-amt.ttl) | The domain model in the AMT vocabulary: 4 concepts, 14 roles, 13 axioms |
 | [`data/toy-chain.ttl`](https://github.com/leiza-scit/CHNT2026-amt/blob/main/data/toy-chain.ttl) | One abstract individual per concept, three weighted edges (no real cases) |
+| [`py/weights.py`](https://github.com/leiza-scit/CHNT2026-amt/blob/main/py/weights.py) | The weight rule of the source paper, the FW type and the hextuple payload, with a lossless round-trip test |
+| [`data/chains-source.csv`](https://github.com/leiza-scit/CHNT2026-amt/blob/main/data/chains-source.csv) | The source strings of the three chains, as they stand in the CHNT data |
 | [`py/reference_reasoner.py`](https://github.com/leiza-scit/CHNT2026-amt/blob/main/py/reference_reasoner.py) | Small independent reasoner used for the worked chain and as a cross-check of the AMT engine |
 
 ## Rebuild

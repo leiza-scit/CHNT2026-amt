@@ -20,9 +20,10 @@
 #
 # Placeholders, to be replaced later:
 #   - the namespace mini: (http://example.org/mini-amt/) is not a real IRI;
-#   - the logic operator of the three role chains (amt:GoedelLogic) is a
-#     placeholder. How the degree of connection is calculated is decided
-#     later and only needs a change of the amt:logic triples below;
+#   - the logic operator of the three role chains is amt:ProductLogic, as in
+#     the role-chain axioms of the source paper (Thiery et al. 2021, listings
+#     5 and 6). It is a proposal: changing it only needs a change of the
+#     amt:logic triples below (see the Review page, question 9);
 #   - the role names are proposals, except hasType / isTypeOf (agreed with
 #     Allard Mees for the Potform case).
 #
@@ -119,7 +120,7 @@ mini:hasWorker a amt:Role ;
 
 # ── 4. Roles: derived (">>") and their inverses ("<<") ──────────────────────
 # Each ">>" role is the consequent of a role chain (section 6). Its weight is
-# the logic operator applied to the weights of the chain (placeholder: minimum).
+# the logic operator applied to the weights of the chain (proposal: product, as in the paper).
 # "Associated with" always means: connected through the chain, nothing more.
 
 mini:potformToCentre a amt:Role ;
@@ -225,25 +226,25 @@ mini:INV_reaches a amt:InverseAxiom ;
 # potformToCentre o hasWorker. For associative operators (Goedel, Product,
 # Einstein, Hamacher) both give the same degree; for the n-ary geometric mean
 # they do not, so the n-ary form is the one that means what it says.
-# amt:logic is a placeholder in all three.
+# amt:logic is amt:ProductLogic in all three.
 
 mini:RCA_potformToCentre a amt:RoleChainAxiom ;
     rdfs:label "isTypeOf o hasProductionCentre -> potformToCentre" ;
     amt:antecedents ( mini:isTypeOf mini:hasProductionCentre ) ;
     amt:consequent  mini:potformToCentre ;
-    amt:logic       amt:GoedelLogic .
+    amt:logic       amt:ProductLogic .
 
 mini:RCA_carrierToActor a amt:RoleChainAxiom ;
     rdfs:label "hasProductionCentre o hasWorker -> carrierToActor" ;
     amt:antecedents ( mini:hasProductionCentre mini:hasWorker ) ;
     amt:consequent  mini:carrierToActor ;
-    amt:logic       amt:GoedelLogic .
+    amt:logic       amt:ProductLogic .
 
 mini:RCA_potformToActor a amt:RoleChainAxiom ;
     rdfs:label "isTypeOf o hasProductionCentre o hasWorker -> potformToActor" ;
     amt:antecedents ( mini:isTypeOf mini:hasProductionCentre mini:hasWorker ) ;
     amt:consequent  mini:potformToActor ;
-    amt:logic       amt:GoedelLogic .
+    amt:logic       amt:ProductLogic .
 
 
 # ── 7. Axioms: subsumption under the generic ">>" ───────────────────────────

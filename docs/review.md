@@ -21,7 +21,7 @@ is proposed and what would change if the answer is no.
 
 ### 3. What does the weight mean: a possibility degree or a probability?
 
-- **Proposed:** A degree of truth per statement, un-normalised (see the Weights page).
+- **Proposed:** A degree of truth per statement, computed by the rule of the source paper (see the Weights page).
 - **If not:** If alternatives must sum to 1, the weights become directional and shares move into a separate measure.
 
 ### 4. Is `actorToPotform` a useful reading?
@@ -43,3 +43,38 @@ is proposed and what would change if the answer is no.
 
 - **Proposed:** Yes for this model: the chain only needs the person who works at a centre.
 - **If not:** If the stamp name (ActorEntity) must stay distinct from the person (Actor), one more concept and one more link enter the chain.
+
+### 8. Is the carrier-centre link asserted (M1) or derived from the actor (M2)?
+
+- **Proposed:** M1: asserted, as in the data export. In the data the centre string belongs to the potter: every one of the 1,375 potters in the centre exports has exactly one, and the carriers compared (1,072 potters) share identical edges. The source paper says the carrier-centre relation follows from the potter-centre relation.
+- **If not:** M2 asserts only the carrier-potter link (crisp) and derives the carrier-centre link. That removes the double counting of the same doubt (see question 9) and needs a certain stamp attribution, which the 2,777 carriers with an uncertain potter name do not have.
+
+### 9. Which logic operator: product or Goedel?
+
+- **Proposed:** Product, as in the role-chain axioms of the source paper. Under M1 a statement that is inherited from the actor enters the chain twice: for Ve- i the carrier-actor degree is 0.25 under product and 0.5 under Goedel.
+- **If not:** Goedel (minimum) avoids the double count but ignores how many doubtful steps a chain has. M2 avoids it under both operators.
+
+### 10. Is a question mark one more possibility?
+
+- **Proposed:** Yes, as in the paper: "A or B?" gives one third to A and B and leaves one third to "neither".
+- **If not:** If the question mark should not take a share from the alternatives, "A or B?" would be 0.5 each and could no longer be told from "A or B"; the rule and the FW type would have to change.
+
+### 11. Which patterns occur on which relation?
+
+- **Proposed:** As listed on the Weights page. For the carrier-centre relation only the question mark is listed, but the exports also carry AND and OR there (inherited from the actor).
+- **If not:** If the carrier-centre relation is derived (M2) the inherited patterns disappear from it.
+
+### 12. Are combined forms such as 18/31 one type?
+
+- **Proposed:** Yes (source paper, figure 6): a slash joins two numbers into one type, an OR separates alternatives. Generic forms such as "dish or bowl?" are modelled like any other alternative.
+- **If not:** If a generic form should be a class of its own, the possibilities would be counted differently.
+
+### 13. What about centre strings that name more entities than the model has nodes?
+
+- **Proposed:** The weight is computed from the whole string; an entity without a centre node gets no edge. This happens in 9,033 of 45,685 centre strings of the exports (regions, groups, centres missing in the mapping); every one of the 95,819 existing centre edges carries the weight the rule gives.
+- **If not:** Creating nodes for regions and groups would close the gap and needs a decision on their class.
+
+### 14. Does the hextuple have to keep the order and spelling of the source string?
+
+- **Proposed:** No. The round trip from the hextuples back to the string is lossless except for the order of the entities and the spelling; weight, FW type and the number of edges decide the pattern.
+- **If not:** If the order matters, the original string becomes a seventh element or a property of the statement.

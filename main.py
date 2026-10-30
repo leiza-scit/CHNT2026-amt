@@ -18,8 +18,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "py"))
 
 STEPS = [
+    ("weights",  "weights",       "the weight rule of the source paper: self-test of data/weight-cases.csv -> dist/"),
     ("reason",   "step_reason",   "reasoning on the toy chain -> dist/ (cross-checks the AMT engine if installed)"),
-    ("diagrams", "step_diagrams", "the four figures -> docs/diagrams/ (SVG + PNG)"),
+    ("chains",   "step_chains",   "three real chains as hextuples, reasoning of the models M1 and M2 -> dist/"),
+    ("diagrams", "step_diagrams", "the five figures -> docs/diagrams/ (SVG + PNG)"),
     ("docs",     "step_docs",     "GitHub Pages documentation -> docs/ (generated from ontology, reasoning, diagrams)"),
 ]
 

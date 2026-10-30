@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from diagram_kit import RED, arrow, legend, new_canvas, node, save  # noqa: E402
 from mini_amt_utils import ONTOLOGY, TOY, load_graph, read_edges, read_model  # noqa: E402
 from reference_reasoner import reason  # noqa: E402
+from step_chains import comparison, run as run_chains  # noqa: E402
 
 CHAIN = ["Potform", "InformationCarrier", "ProductionCentre", "Actor"]   # chain direction
 XS = [2.4, 8.2, 14.0, 19.8]
@@ -139,7 +140,7 @@ def figure_full_semantics(model):
     for axiom, ante, cons, logic in model["chains"]:
         y = der_row[cons]
         box = node(ax, colx["rca"], y, 6.6, 2.0, "RoleChainAxiom", "axiom", size=9.5,
-                   sub=" o ".join(ante) + f"\nlogic: {logic} (placeholder)", sub_size=8)
+                   sub=" o ".join(ante) + f"\nlogic: {logic} (proposal)", sub_size=8)
         for i, role in enumerate(ante):
             dy = (i - (len(ante) - 1) / 2) * 0.7
             arrow(ax, (pills[role]["right"][0] + 0.08, pills[role]["cy"]),
@@ -170,9 +171,78 @@ def figure_full_semantics(model):
              lw=2.4 if edge else 1.4)
         ax.text(x + 2.7, 0.7, text, va="center", fontsize=9.5)
         x += 8.6 if len(text) < 20 else 9.8
-    ax.text(0.0, -0.3, "Roles show domain -> range. Degrees (amt:weight) and the logic operator are placeholders; "
-            "their calculation is decided later.", fontsize=8.5, color="#475569", va="center")
+    ax.text(0.0, -0.3, "Roles show domain -> range. The logic operator of the role chains is a proposal (product, as in the source paper).", fontsize=8.5, color="#475569", va="center")
     save(fig, "02_full_semantics")
+
+
+# ── figure 05: three real chains ─────────────────────────────────────────────
+TYPE_TAG = {"UncertainValue": "U", "VagueValue": "V", "FuzzinessWobblinessValue": "FW", None: ""}
+COLX = {"pf": 2.8, "ic": 8.8, "pc": 14.8, "ae": 20.6}
+PITCH = 2.1
+
+
+def fmt(x):
+    return f"{x:.3f}".rstrip("0").rstrip(".")
+
+
+def figure_chains(res):
+    """One panel per chain: the asserted hextuples with weight and FW type, two red derived arcs."""
+    comp = comparison(res)
+    edges, nodes, rows = res["edges"], res["nodes"], res["rows"]
+    panels = {}
+    for r in rows:
+        panels.setdefault(r["chain"], []).append(r)
+    layout = []
+    for chain, rs in sorted(panels.items()):
+        ics = sorted("ic_" + r["carrier_id"] for r in rs)
+        ae = "ae_" + next(e["from"] for e in edges if e["role"] == "worksAt" and e["from"].startswith("ae_")
+                          and nodes[e["from"]][1] == rs[0]["potter"])[3:]
+        pfs = list(dict.fromkeys(e["to"] for ic in ics for e in edges if e["role"] == "hasType" and e["from"] == ic))
+        pcs = list(dict.fromkeys(e["to"] for e in edges if e["role"] == "hasProductionCentre" and e["from"] in ics))
+        n = max(len(pfs), len(ics), len(pcs))
+        layout.append((chain, rs, ics, ae, pfs, pcs, n, n * PITCH + 3.0))
+    total = sum(h for *_, h in layout) + 2.4
+    fig, ax = new_canvas(15.5, 15.5 * total / 23.4, (-0.4, 23.0), (0.0, total))
+    ax.text(0.0, total - 0.5, "Three chains from the CHNT data: hextuples and derived degrees",
+            fontsize=14, fontweight="bold", va="center")
+    top = total - 1.2
+    for chain, rs, ics, ae, pfs, pcs, n, h in layout:
+        mid = top - 1.9 - (n * PITCH) / 2 + PITCH / 2
+        pos = {}
+        for col, items in (("pf", pfs), ("ic", ics), ("pc", pcs), ("ae", [ae])):
+            for i, key in enumerate(items):
+                pos[key] = (COLX[col], mid + ((len(items) - 1) / 2 - i) * PITCH)
+        box = {}
+        for key, (x, y) in pos.items():
+            concept, label = nodes[key]
+            box[key] = node(ax, x, y, 3.5, 1.15, label, "instance", shape="oval", size=9, bold=True)
+        ax.text(0.0, top - 0.35, f"Chain {chain}: {rs[0]['potter']}", fontsize=11, fontweight="bold", va="center")
+
+        def tag(e):
+            return f"{e['weight']:g} {TYPE_TAG[e['type']]}".strip()
+
+        for e in edges:
+            if e["from"] not in pos or e["to"] not in pos:
+                continue
+            if e["role"] == "hasType":
+                arrow(ax, box[e["from"]]["left"], box[e["to"]]["right"], tag(e), t=0.5, size=8)
+            elif e["role"] == "hasProductionCentre":
+                arrow(ax, box[e["from"]]["right"], box[e["to"]]["left"], tag(e), t=0.3, size=8)
+            elif e["role"] == "worksAt":
+                arrow(ax, box[e["from"]]["left"], box[e["to"]]["right"], tag(e), t=0.45, size=8)
+        c1 = next(c for c in comp if c["relation"] == "potformToActor" and c["from"] == pfs[0] and c["to"] == ae)
+        c2 = next(c for c in comp if c["relation"] == "potformToCentre" and c["from"] == pfs[-1] and c["to"] == pcs[-1])
+        top_pf, bot_pf = box[pfs[0]], box[pfs[-1]]
+        arrow(ax, top_pf["top"], box[ae]["top"], f"Potform>>Actor   M1 {fmt(c1['m1_product'])}  |  M2 {fmt(c1['m2_product'])}",
+              color=RED, rad=-0.16, t=0.5, size=8.5, lw=1.6)
+        arrow(ax, bot_pf["bottom"], box[pcs[-1]]["bottom"], f"Potform>>Centre   {fmt(c2['m1_product'])}",
+              color=RED, dashed=True, rad=0.28, t=0.5, size=8.5, lw=1.6)
+        top -= h
+    legend(ax, 0.0, 0.7, [("solid", "asserted, weight + type"), ("red", "derived (product logic)"),
+                          ("reddashed", "derived Potform>>Centre")], gap=7.6)
+    ax.text(0.0, 0.15, "Type: U uncertain (?), V vague (AND / OR), FW fuzzy/wobbly (? with AND / OR). "
+            "M1: carrier-centre asserted; M2: derived from the actor.", fontsize=8.5, color="#475569", va="center")
+    save(fig, "05_chains")
 
 
 def main() -> int:
@@ -195,7 +265,7 @@ def main() -> int:
                for (role, a, b), e in state.items()}
     chain_figure(
         model, instances=instances, weights=weights,
-        title="Toy chain: what the reasoning derives (degrees: placeholder logic)",
+        title="Toy chain: what the reasoning derives (toy weights, product logic)",
         stem="03_toy_reasoning",
         legend_items=[("solid", "asserted, with weight"), ("dashed", "inverse, same weight"),
                       ("red", "derived, weight by logic"), ("instance", "individual")])
@@ -206,7 +276,8 @@ def main() -> int:
         legend_items=[("solid", "asserted property"), ("dashed", "inverse of an asserted property"),
                       ("red", "derived, forward (>>)"), ("reddashed", "derived, inverse (<<)")])
     figure_full_semantics(model)
-    print("wrote docs/diagrams/01_simple_model, 02_full_semantics, 03_toy_reasoning, 04_reasoning_both (.svg + .png)")
+    figure_chains(run_chains())
+    print("wrote docs/diagrams/01_simple_model, 02_full_semantics, 03_toy_reasoning, 04_reasoning_both, 05_chains (.svg + .png)")
     return 0
 
 

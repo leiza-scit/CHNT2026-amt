@@ -6,7 +6,75 @@ title: Weights
 
 # Weights and direction
 
-**Question:** is `amt:weight` the same in both directions?
+## How the weight is computed
+
+The rule is the one of the source paper (Thiery, Mees, Tolle and Wigg-Wolf 2021, section 4) and is
+implemented in [`py/weights.py`](https://github.com/leiza-scit/CHNT2026-amt/blob/main/py/weights.py):
+
+    amt_weight = 1 / (n_questionmark + n_possibilities)      (two decimals)
+
+| Source string | n_possibilities | Meaning |
+|---|---|---|
+| no AND, no OR | 1 | one entity |
+| AND | 1 | all entities hold; each keeps the full weight |
+| OR | number of entities | exactly one holds; the weight is shared |
+
+`n_questionmark` is 1 if the string contains a question mark, else 0. A string that mixes AND and OR is
+not covered. Cases (checked by the self-test, `python py/weights.py`):
+
+| String | Relation | Entities | ? | Possibilities | Weight | FW type | Expected on the relation |
+|---|---|---|---|---|---|---|---|
+| `Rheinzabern` | `actor--productioncentre` | 1 | 0 | 1 | 1.0 | - | yes |
+| `Rheinzabern?` | `actor--productioncentre` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
+| `Kräherwald and Rheinzabern` | `actor--productioncentre` | 2 | 0 | 1 | 1.0 | VagueValue | yes |
+| `Kräherwald and Rheinzabern?` | `actor--productioncentre` | 2 | 1 | 1 | 0.5 | FuzzinessWobblinessValue | yes |
+| `Pfaffenhofen or Westerndorf` | `actor--productioncentre` | 2 | 0 | 2 | 0.5 | VagueValue | yes |
+| `Pfaffenhofen or Westerndorf?` | `actor--productioncentre` | 2 | 1 | 2 | 0.33 | FuzzinessWobblinessValue | no |
+| `Heiligenberg and Ittenwiller and Kräherwald and Rheinzabern and Waiblingen-Beinstein?` | `actor--productioncentre` | 5 | 1 | 1 | 0.5 | FuzzinessWobblinessValue | yes |
+| `15/17 or 18 or 18/31` | `informationcarrier--potform` | 3 | 0 | 3 | 0.33 | VagueValue | yes |
+| `24 or 27 or 33` | `informationcarrier--potform` | 3 | 0 | 3 | 0.33 | VagueValue | yes |
+| `33 or 38?` | `informationcarrier--potform` | 2 | 1 | 2 | 0.33 | FuzzinessWobblinessValue | yes |
+| `dish or bowl?` | `informationcarrier--potform` | 2 | 1 | 2 | 0.33 | FuzzinessWobblinessValue | yes |
+| `32?` | `informationcarrier--potform` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
+| `18/31?` | `informationcarrier--potform` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
+| `Lezoux?` | `informationcarrier--productioncentre` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
+| `Kräherwald and Rheinzabern` | `informationcarrier--productioncentre` | 2 | 0 | 1 | 1.0 | VagueValue | no |
+
+The rule was checked against the CHNT exports: every one of the 95,819 existing centre edges carries
+the weight the rule gives for its string.
+
+## From quadruple to hextuple
+
+An AMT statement is a reified quadruple: `rdf:subject`, `rdf:predicate`, `rdf:object`, `amt:weight`.
+Two more elements make it a hextuple:
+
+| Element | Carries | Value |
+|---|---|---|
+| `amt:type` | the kind of imprecision | a class of the [FW ontology](https://github.com/caa-datadragons/FW_Ontology): `nfdi_fw:UncertainValue`, `nfdi_fw:VagueValue` or `nfdi_fw:FuzzinessWobblinessValue`; absent for a certain statement |
+| `amt:method` | how the weight was obtained | `nfdi_fw:ReciprocalPossibilityWeight`, a resource that describes the rule above ([draft](https://github.com/leiza-scit/CHNT2026-amt/blob/main/ontology/fw-method-draft.ttl)) |
+
+The type follows from the pattern of the string:
+
+| Pattern | Source | FW type |
+|---|---|---|
+| `q` | question mark only | `UncertainValue` |
+| `or` | OR, no question mark | `VagueValue` |
+| `and` | AND, no question mark | `VagueValue` |
+| `q+or`, `q+and` | question mark with OR or AND | `FuzzinessWobblinessValue` |
+
+Which patterns are expected depends on the relation (the others are flagged, not rejected):
+
+| Relation | Expected patterns |
+|---|---|
+| `actor--productioncentre` | `and`, `or`, `q`, `q+and` |
+| `informationcarrier--potform` | `or`, `q`, `q+or` |
+| `informationcarrier--productioncentre` | `q` |
+
+Weight, type and the number of edges of a statement are enough to rebuild the source string: the
+round trip is lossless except for the order of the entities and the spelling. The names `amt:type`
+and `amt:method` are proposals until they are agreed with the AMT vocabulary.
+
+## Is the weight the same in both directions?
 
 **Yes, for inverse roles the weight is the same in both directions.** If a carrier is of a potform
 with degree 0.9, then the potform is the type of that carrier with degree 0.9. This is how AMT defines
@@ -42,9 +110,9 @@ and are **not** all symmetric. Apart from the first row they should not be store
 1. **Assert one direction only.** Assert the roles in the direction of the source data (`hasType`,
    `hasProductionCentre`, `worksAt`) and let the inverse axioms create the other direction. If both
    directions are asserted with different weights, the data contradicts itself.
-2. **Keep `amt:weight` un-normalised.** One carrier may have two centres with weight 1.0 each (vague:
-   both hold) or 0.5 each (uncertain). `amt:weight` does not have to sum to 1, and it should not be
-   forced to.
+2. **Take the weight from the rule.** `py/weights.py` computes it from the source string. AND keeps the
+   full weight for every entity (1.0, or 0.5 with a question mark); OR shares it (one over the number of
+   alternatives, one more with a question mark). Nothing is normalised afterwards.
 3. **Put shares and counts elsewhere.** If the question "how many carriers" or "what fraction" matters,
    compute it as its own measure on the pair, in the direction in which it is asked.
 4. **Check the symmetry.** A consistency check (a SPARQL query on the reasoned graph) can report every
@@ -52,8 +120,7 @@ and are **not** all symmetric. Apart from the first row they should not be store
 
 ## Open for the degree step
 
-The reading of the weight is a modelling decision for the degree step, and it is archaeological
-before it is technical: is 0.5 on an attribution "possible, but not certain" (a possibility degree)
-or "one of two equally likely alternatives" (a probability)? Under the first reading, two alternatives
-can both carry 1.0. Under the second, they sum to 1 and the inverse direction cannot be normalised in
-the same way. Both readings keep the inverse symmetric as long as the weight is stored un-normalised.
+The rule reads a question mark as one more possibility: "A or B?" gives one third to A, one third to B
+and leaves one third to "neither". "A and B?" gives one half to each, because under AND both hold and the
+question mark is the only doubt. Whether that is what the archaeologist means by a question mark is an
+open question (see the Review page). The weight stays symmetric under inversion either way.
