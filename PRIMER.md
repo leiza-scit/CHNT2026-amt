@@ -32,6 +32,14 @@ zurückgeschrieben. Dieses Dokument ist deutsch; alles andere im Repository ist 
 - Unter Product zählt Modell M1 eine vom Potter geerbte Unsicherheit doppelt: Ve- i, `carrierToActor` 0.25 (Product)
   gegen 0.5 (Gödel).
 - 2.777 Träger haben einen unsicheren Potternamen (OR im Namen): die Träger-Potter-Verknüpfung von M2 ist nicht immer scharf.
+- **FW-Ontologie angepasst** (`caa-datadragons/FW_Ontology`, Commit `15ae05f`, 2026-10-30), das ändert die Hextupel-Namen:
+  `fw:hasDegreeOfConnection` (äquivalent zu `amt:weight`), `fw:hasType` mit **Individuen** `fw:Uncertainty`, `fw:Vagueness`,
+  `fw:FuzzinessWobbliness` (Klasse `fw:FW_Type`), `fw:hasMethod` mit `fw:EqualShareRule` (`fw:formula "1 / (n_question + n_possibilities)"`,
+  `fw:implementedBy` steht noch aus), und die Quellzeichenkette als `fw:TextEvidence` (`fw:sourceString`) über `fw:derivedFrom`; ein
+  Evidenzknoten kann sich die Alternativen eines OR teilen. `fw:UncertainValue` und `fw:VagueValue` sind Unterklassen von
+  `fw:FuzzinessWobblinessValue`. Die Beispiele der FW-Ontologie bestätigen die Zuordnung Muster → Typ (`Lezoux or Vichy ?` = 0,33, FW;
+  `South Gaul?` = 0,5, Unsicherheit). Die AMT-Logiken stehen dort als `fw:PropagationMethod` (Vorschlag `data/amt-alignment.ttl`, gehört
+  in `amt.ttl` der Engine).
 - Die AMT-Engine wurde in diesen Chats **nie ausgeführt**; die SHACL-Validierung gegen `amt-shapes.ttl` ist **nicht gelaufen**.
 
 ### A2 Zielbild
@@ -69,11 +77,12 @@ Eigenschaften, die das Ergebnis haben muss:
 | Wie wird das Gewicht berechnet? | `1 / (n_? + n_Möglichkeiten)`, zwei Nachkommastellen; AND behält volles Gewicht, OR teilt, `?` zählt als eine Möglichkeit | 2026-10-30 |
 | Zuordnung FW-Typ je Muster | `?` → `UncertainValue`; OR oder AND → `VagueValue`; `?` mit OR oder AND → `FuzzinessWobblinessValue` (Flo) | 2026-10-30 |
 | Erwartete Muster je Relation | Träger–Potform: OR, `?`, `?`+OR; Actor–Zentrum: OR, AND, `?`+AND, `?`; Träger–Zentrum: `?` (Flo) | 2026-10-30 |
-| Hextupel | `amt:type` und `amt:method` zusätzlich zum Quadrupel; Methode wird in `caa-datadragons/FW_Ontology` beschrieben und verlinkt | 2026-10-30 |
-| Namen `amt:type`, `amt:method`, `nfdi_fw:ReciprocalPossibilityWeight`, `nfdi_fw:WeightMethod` | Vorschlag | Vorschlag |
+| Hextupel | Quadrupel plus Typ und Methode; Methode wird in `caa-datadragons/FW_Ontology` beschrieben und verlinkt | 2026-10-30 |
+| Namen für Gewicht, Typ, Methode, Evidenz | `fw:hasDegreeOfConnection` (≡ `amt:weight`), `fw:hasType` (Individuen `fw:Uncertainty` / `fw:Vagueness` / `fw:FuzzinessWobbliness`), `fw:hasMethod` (`fw:EqualShareRule`), optional `fw:derivedFrom` (`fw:TextEvidence`). Hinfällig: die Vorschläge `amt:type`, `amt:method`, `nfdi_fw:ReciprocalPossibilityWeight` und `nfdi_fw:WeightMethod`; die FW-Ontologie hat es am 2026-10-30 anders festgelegt. Mini-AMT zieht in S3a nach | 2026-10-30 |
+| Methode abgeleiteter Kanten | die AMT-Logik als `fw:PropagationMethod`; Typ abgeleiteter Kanten offen (Teil D) | Vorschlag |
 | Logik der Rollenketten | `ProductLogic` wie im Paper | Vorschlag |
 | Modell M1 (Träger–Zentrum asserted) oder M2 (aus dem Actor abgeleitet) | M1 bleibt Hauptmodell, bis Allard geantwortet hat | Vorschlag |
-| Typ-Klassen | die Basisklassen (`VagueValue` usw.), nicht die `…ResourceValue`-Unterklassen | Vorschlag |
+| Typ-Klassen | hinfällig: der Typ einer Aussage ist ein Individuum von `fw:FW_Type`, keine Klasse (FW-Ontologie, 2026-10-30) | 2026-10-30 |
 | Sprache | PRIMER und Memos deutsch, Repository englisch | 2026-10-30 |
 
 ### A5 Was in welchem Chat hochgeladen wird
@@ -100,13 +109,15 @@ Nicht hochladen: `.git/`, `.venv/`, `dist/`, die CHNT-Exporte (nur bei Schritten
 | S2 | Reasoning-Rollen mit Inversen, Docs für GitHub Pages, Gewichtsrichtung (0.2.0) | CHNT2026-amt | S1 | erledigt 2026-10-30 |
 | S3 | Gewichtsregel, Hextupel, drei echte Ketten, Modell M2 (0.3.0) | CHNT2026-amt | S2 | erledigt 2026-10-30 |
 | S4 | Entscheidung M1 / M2 und Logik nach der Prüfung durch Allard | CHNT2026-amt | S3 | offen |
-| S5 | Methode und `amt:type` / `amt:method` in die FW-Ontologie | FW_Ontology | S3 | offen |
+| S3a | Mini-AMT an die FW-Ontologie anpassen (Namen, Typ-Individuen, Methode, Evidenz) | CHNT2026-amt | S3 | offen |
+| S5 | Methode und Typen in der FW-Ontologie | FW_Ontology | S3 | FW-Seite erledigt 2026-10-30; `fw:implementedBy` offen |
+| S10 | Hextupel in amt-engine und amt-runner einlesen und durchreichen (eigener Chat) | amt-engine, amt-runner | S3a | offen |
 | S6 | Alle Potter und Träger als Hextupel (Export → `dist/`) | CHNT2026-amt | S4 | offen |
 | S7 | Viewer, angepasst aus amt-engine und amt-runner | CHNT2026-amt | S6 | offen |
 | S8 | Notebook (quarto-live) | CHNT2026-amt | S6 | offen |
 | S9 | Engine-Abgleich und SHACL-Validierung | CHNT2026-amt | S3 | offen |
 
-S5 und S9 sind unabhängig von S4 und können in beliebiger Reihenfolge laufen. S6 bis S8 warten auf die Entscheidung in S4.
+S3a, S5 und S9 sind unabhängig von S4 und können in beliebiger Reihenfolge laufen. S6 bis S8 warten auf die Entscheidung in S4; S10 wartet auf S3a.
 
 ---
 
@@ -138,13 +149,25 @@ die exportierten Zentrumsgewichte der vier Träger stimmen mit der Regel überei
 
 **Abnahme:** A4 enthält Beschluss und Datum; die Ontologie entspricht dem Beschluss; Review-Seite aktualisiert.
 
+## S3a — Mini-AMT an die FW-Ontologie anpassen
+
+**Ziel:** Hextupel, Quellen und Dokumentation benutzen die Begriffe der FW-Ontologie statt meiner Vorschläge.
+
+**Uploads:** `PRIMER.md`, das Repository als Bündel, die aktuelle FW-Ontologie (`ontology/nfdi_fw_ontology.owl`).
+
+Inhalt:
+
+- `py/weights.py`: `FW_TYPE` liefert die Individuen `Uncertainty`, `Vagueness`, `FuzzinessWobbliness` (Zuordnung der Muster bleibt); die Methode heißt `EqualShareRule`.
+- `py/step_chains.py`: `dist/chains.ttl` schreibt `fw:hasDegreeOfConnection`, `fw:hasType`, `fw:hasMethod` und je Quellzeichenkette einen `fw:TextEvidence`-Knoten (`fw:sourceString`), den sich die Aussagen einer Zeichenkette über `fw:derivedFrom` teilen. Das beantwortet Review-Frage 14 (Reihenfolge und Schreibweise bleiben erhalten).
+- Der Roundtrip-Test liest zusätzlich die Zeichenkette aus dem Evidenzknoten; die Rekonstruktion aus Gewicht, Typ und Kantenzahl bleibt als Gegenprobe.
+- `ontology/fw-method-draft.ttl` entfällt; `fw:implementedBy` bekommt die IRI von `py/weights.py` (Datei im Repository oder Release).
+- Seiten *Weights*, *Chains*, *Review* und die Grafik 05 nennen die neuen Begriffe; `README.md` und `CHANGELOG.md` auch.
+
+**Abnahme:** `python main.py` läuft durch; `dist/chains.ttl` enthält kein `amt:type` und kein `amt:method` mehr; der Selbsttest prüft, dass jede Aussage einer Zeichenkette denselben Evidenzknoten hat und dass Gewicht, Typ und Methode zu den Beispielen der FW-Ontologie (`Lezoux or Vichy ?` = 0,33, `South Gaul?` = 0,5) passen; zwei Läufe ändern keine Datei.
+
 ## S5 — FW-Ontologie
 
-**Ziel:** Die Methode ist im FW-Repository beschrieben und per w3id auflösbar; `amt:type` und `amt:method` stehen mit Definition dort oder im AMT-Vokabular.
-
-**Uploads:** das FW-Repository als Bündel.
-
-**Abnahme:** Die Klasse und die Methode erscheinen in der pyLODE-Dokumentation; die IRI im Hextupel löst auf.
+**Stand 2026-10-30:** Die FW-Seite ist erledigt (Commit `15ae05f`): `fw:hasType`, `fw:hasMethod`, `fw:formula`, `fw:implementedBy`, Evidenzklassen, `fw:EqualShareRule`. Offen ist nur `fw:implementedBy` für die Gewichtsregel; die IRI liefert S3a.
 
 ## S6 bis S9
 
@@ -154,8 +177,9 @@ Werden vor dem Start ausgearbeitet (Ziel, Uploads, Abnahme), sobald S4 entschied
 
 ## Teil D — Offene Punkte
 
-- Sind die `…ResourceValue`-Klassen der FW-Ontologie die richtigen Typen für Objekte, die Ressourcen sind? Heute: Basisklassen (A4).
-- Soll die Originalzeichenkette als siebtes Element oder als Eigenschaft der Aussage mitlaufen, falls die Reihenfolge der Entitäten zählt?
+- Typ und Methode **abgeleiteter** Kanten: die Methode ist die Logik (`fw:PropagationMethod`), `fw:derivedFrom` führt auf die Kettenaussagen; welchen Typ eine abgeleitete Kante hat (Typ der schwächsten Aussage? `fw:FuzzinessWobbliness`?), ist nicht festgelegt. Vor S10 klären, auch mit Allards Antwort auf Frage 9.
+- Prefix: die FW-Ontologie nutzt `fw:` und `nfdi_fw:` für denselben Namespace `http://w3id.org/fw_ontology/`; in Mini-AMT auf `fw:` vereinheitlichen.
+- Der Vorschlag `data/amt-alignment.ttl` (AMT-Logiken als `fw:PropagationMethod`) gehört in `amt.ttl` der Engine; mit S10 entscheiden.
 - Regionen und Gruppen ohne Zentrumsknoten (9.033 Strings): eigene Klasse oder weglassen?
 - LICENSE, `CITATION.cff` und eine `RELEASE`-Konstante fehlen noch; mit dem ersten Zenodo-Release nachziehen.
 - Namespace `mini:` ist ein Platzhalter; persistente IRI per w3id klären.
