@@ -1,16 +1,18 @@
 text,context,entities,weight,pattern,fw_type,listed,source
 Rheinzabern,actor--productioncentre,1,1.0,certain,,yes,no AND or OR
-Rheinzabern?,actor--productioncentre,1,0.5,q,UncertainValue,yes,question mark only
-Kräherwald and Rheinzabern,actor--productioncentre,2,1.0,and,VagueValue,yes,paper figure 5 (AND)
-Kräherwald and Rheinzabern?,actor--productioncentre,2,0.5,q+and,FuzzinessWobblinessValue,yes,AND with question mark
-Pfaffenhofen or Westerndorf,actor--productioncentre,2,0.5,or,VagueValue,yes,OR of two
-Pfaffenhofen or Westerndorf?,actor--productioncentre,2,0.33,q+or,FuzzinessWobblinessValue,no,OR of two with question mark: not in the list for the relation
-Heiligenberg and Ittenwiller and Kräherwald and Rheinzabern and Waiblingen-Beinstein?,actor--productioncentre,5,0.5,q+and,FuzzinessWobblinessValue,yes,data: five centres and one question mark
-15/17 or 18 or 18/31,informationcarrier--potform,3,0.33,or,VagueValue,yes,paper figure 6 (15/17 and 18/31 are single types)
-24 or 27 or 33,informationcarrier--potform,3,0.33,or,VagueValue,yes,data: Ve- i
-33 or 38?,informationcarrier--potform,2,0.33,q+or,FuzzinessWobblinessValue,yes,data: Cintusmus i
-dish or bowl?,informationcarrier--potform,2,0.33,q+or,FuzzinessWobblinessValue,yes,data: Cerialis ii
-32?,informationcarrier--potform,1,0.5,q,UncertainValue,yes,data: Vitalis viii
-18/31?,informationcarrier--potform,1,0.5,q,UncertainValue,yes,data: Onnio-
-Lezoux?,informationcarrier--productioncentre,1,0.5,q,UncertainValue,yes,data: question mark only
-Kräherwald and Rheinzabern,informationcarrier--productioncentre,2,1.0,and,VagueValue,no,data: AND on the carrier is inherited from the actor; not in the list for the relation
+Rheinzabern?,actor--productioncentre,1,0.5,q,Uncertainty,yes,question mark only
+Kräherwald and Rheinzabern,actor--productioncentre,2,1.0,and,Vagueness,yes,paper figure 5 (AND)
+Kräherwald and Rheinzabern?,actor--productioncentre,2,0.5,q+and,FuzzinessWobbliness,yes,AND with question mark
+Pfaffenhofen or Westerndorf,actor--productioncentre,2,0.5,or,Vagueness,yes,OR of two
+Pfaffenhofen or Westerndorf?,actor--productioncentre,2,0.33,q+or,FuzzinessWobbliness,no,OR of two with question mark: not in the list for the relation
+Heiligenberg and Ittenwiller and Kräherwald and Rheinzabern and Waiblingen-Beinstein?,actor--productioncentre,5,0.5,q+and,FuzzinessWobbliness,yes,data: five centres and one question mark
+15/17 or 18 or 18/31,informationcarrier--potform,3,0.33,or,Vagueness,yes,paper figure 6 (15/17 and 18/31 are single types)
+24 or 27 or 33,informationcarrier--potform,3,0.33,or,Vagueness,yes,data: Ve- i
+33 or 38?,informationcarrier--potform,2,0.33,q+or,FuzzinessWobbliness,yes,data: Cintusmus i
+dish or bowl?,informationcarrier--potform,2,0.33,q+or,FuzzinessWobbliness,yes,data: Cerialis ii
+32?,informationcarrier--potform,1,0.5,q,Uncertainty,yes,data: Vitalis viii
+18/31?,informationcarrier--potform,1,0.5,q,Uncertainty,yes,data: Onnio-
+Lezoux?,informationcarrier--productioncentre,1,0.5,q,Uncertainty,yes,data: question mark only
+Kräherwald and Rheinzabern,informationcarrier--productioncentre,2,1.0,and,Vagueness,no,data: AND on the carrier is inherited from the actor; not in the list for the relation
+Lezoux or Vichy ?,actor--productioncentre,2,0.33,q+or,FuzzinessWobbliness,no,example of the FW ontology (data/fw_amt_example.ttl): 1 / (1 + 2) = 0.33
+South Gaul?,informationcarrier--productioncentre,1,0.5,q,Uncertainty,yes,example of the FW ontology (data/fw_amt_example.ttl): 1 / (1 + 1) = 0.5

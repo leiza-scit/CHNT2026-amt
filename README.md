@@ -46,13 +46,18 @@ frequencies and normalised alternatives are directional and do not belong in
 
 `py/weights.py` computes the weight of a source string by the rule of the source paper,
 `amt_weight = 1 / (n_questionmark + n_possibilities)`, and derives the FW type
-(`UncertainValue`, `VagueValue`, `FuzzinessWobblinessValue`) from the pattern of the string
-(question mark, AND, OR) for each relation. A statement then is a **hextuple**: subject,
-predicate, object, `amt:weight`, `amt:type` and `amt:method`. The self-test includes a
-lossless round trip from the edges back to the string. `py/step_chains.py` models three
-chains from the CHNT data (`data/chains-source.csv`) and runs two models over them:
-M1 (this ontology) and M2 (`ontology/variant-b-derived.ttl`, carrier-centre derived from
-the actor). `ontology/fw-method-draft.ttl` is the draft of the method resource for the FW ontology.
+(`fw:Uncertainty`, `fw:Vagueness`, `fw:FuzzinessWobbliness`) from the pattern of the string
+(question mark, AND, OR) for each relation. A statement then is a **hextuple** with the terms of the
+[FW ontology](https://github.com/caa-datadragons/FW_Ontology): subject, predicate, object,
+`fw:hasDegreeOfConnection` (the same as `amt:weight`), `fw:hasType` and `fw:hasMethod`
+(`fw:EqualShareRule`); the source string is kept as `fw:TextEvidence` and linked with `fw:derivedFrom`.
+`py/step_chains.py` models three chains from the CHNT data (`data/chains-source.csv`) and runs two
+models over them: M1 (this ontology) and M2 (`ontology/variant-b-derived.ttl`, carrier-centre derived
+from the actor). It reads its own Turtle back and checks that every statement leads to its string. If
+the AMT engine 0.6.0 or newer is installed (`pip install -r requirements.txt`), it also runs the three
+models with the engine and compares every edge, type and method included.
+`dist/chains-with-model.ttl` can be run with the AMT runner or loaded in the AMT Explorer.
+`ontology/fw-implemented-by.ttl` is the one triple (`fw:implementedBy`) that the FW ontology still lacks.
 
 ## Run
 
@@ -69,8 +74,8 @@ Pages serves it; set Pages to "Deploy from a branch", folder `/docs`.
 
 The `reason` step (toy chain) uses an independent reference reasoner (`py/reference_reasoner.py`,
 about sixty lines). If the AMT engine is importable
-(`pip install git+https://github.com/n4o-rse/amt-engine.git`), the same step also
-runs the engine on `dist/mini-amt-with-toy.ttl` and fails if the two disagree on
+(`pip install "amt @ git+https://github.com/alpaca-fair-framework/amt-engine.git@v0.6.0"`),
+the same step also runs the engine on `dist/mini-amt-with-toy.ttl` and fails if the two disagree on
 any edge or weight.
 
 ## Placeholders and proposals
@@ -80,8 +85,7 @@ any edge or weight.
   (`REPO` in `py/docs_text.py`).
 * `amt:logic` of the three role chains is `amt:ProductLogic`, as in the role-chain axioms of
   the source paper. It is a proposal; the toy weights (0.9 / 0.6 / 0.8) are arbitrary.
-* `amt:type`, `amt:method` and `nfdi_fw:ReciprocalPossibilityWeight` are proposals until they
-  are agreed with the AMT vocabulary and the FW ontology.
+* `fw:implementedBy` of `fw:EqualShareRule` is not in the FW ontology yet (`ontology/fw-implemented-by.ttl`).
 * Role names other than `hasType` / `isTypeOf` are proposals.
 * The source model's `ActorEntity` and `Actor` are collapsed into `Actor`.
 
@@ -92,7 +96,7 @@ any edge or weight.
     CHANGELOG.md
     ontology/mini-amt.ttl      the domain model M1, no instances
     ontology/variant-b-derived.ttl   model M2: carrier-centre derived from the actor
-    ontology/fw-method-draft.ttl     draft of the amt:method resource for the FW ontology
+    ontology/fw-implemented-by.ttl   the fw:implementedBy triple for fw:EqualShareRule (not read by the code)
     data/toy-chain.ttl         one abstract individual per concept
     data/chains-source.csv     source strings of the three real chains
     data/weight-cases.csv      test cases of the weight rule

@@ -269,22 +269,25 @@ the weight the rule gives for its string.
 
 ## From quadruple to hextuple
 
-An AMT statement is a reified quadruple: `rdf:subject`, `rdf:predicate`, `rdf:object`, `amt:weight`.
-Two more elements make it a hextuple:
+An AMT statement is a reified quadruple: `rdf:subject`, `rdf:predicate`, `rdf:object`, `amt:weight`. The
+[FW ontology](https://github.com/caa-datadragons/FW_Ontology) (`http://w3id.org/fw_ontology/`, prefix `fw:`)
+adds two elements, which make it a hextuple, and an optional link to the source:
 
 | Element | Carries | Value |
 |---|---|---|
-| `amt:type` | the kind of imprecision | a class of the [FW ontology](https://github.com/caa-datadragons/FW_Ontology): `nfdi_fw:UncertainValue`, `nfdi_fw:VagueValue` or `nfdi_fw:FuzzinessWobblinessValue`; absent for a certain statement |
-| `amt:method` | how the weight was obtained | `nfdi_fw:{W.FW_METHOD}`, a resource that describes the rule above ([draft]({T.BLOB}ontology/fw-method-draft.ttl)) |
+| `fw:hasDegreeOfConnection` | the weight; the same as `amt:weight` (the AMT engine reads both) | `0.33` |
+| `fw:hasType` | the kind of fuzziness | an individual of `fw:FW_Type`: `fw:Uncertainty`, `fw:Vagueness` or `fw:FuzzinessWobbliness`; absent for a certain statement, which AMT reads as `fw:Vagueness` |
+| `fw:hasMethod` | how the weight was obtained | `fw:{W.FW_METHOD}`, the rule above; `fw:implementedBy` is meant to point to [`py/weights.py`]({T.BLOB}py/weights.py) ([triple]({T.BLOB}ontology/fw-implemented-by.ttl)) |
+| `fw:derivedFrom` | what the weight rests on (optional) | a `fw:TextEvidence` node with the source string (`fw:sourceString`); all statements of one string share the node |
 
 The type follows from the pattern of the string:
 
 | Pattern | Source | FW type |
 |---|---|---|
-| `q` | question mark only | `UncertainValue` |
-| `or` | OR, no question mark | `VagueValue` |
-| `and` | AND, no question mark | `VagueValue` |
-| `q+or`, `q+and` | question mark with OR or AND | `FuzzinessWobblinessValue` |
+| `q` | question mark only | `fw:Uncertainty` |
+| `or` | OR, no question mark | `fw:Vagueness` |
+| `and` | AND, no question mark | `fw:Vagueness` |
+| `q+or`, `q+and` | question mark with OR or AND | `fw:FuzzinessWobbliness` |
 
 Which patterns are expected depends on the relation (the others are flagged, not rejected):
 
@@ -292,9 +295,16 @@ Which patterns are expected depends on the relation (the others are flagged, not
 |---|---|
 {ctx}
 
-Weight, type and the number of edges of a statement are enough to rebuild the source string: the
-round trip is lossless except for the order of the entities and the spelling. The names `amt:type`
-and `amt:method` are proposals until they are agreed with the AMT vocabulary.
+The source string is kept exactly in the evidence node, and the step `chains` reads `dist/chains.ttl` back
+and checks that every statement leads to its string, with the weight, type and method the rule gives. As a
+counter-check, weight, type and the number of edges alone rebuild the string up to the order of the entities
+and the spelling.
+
+**Derived statements.** AMT.engine 0.6.0 and the reference reasoner of this repository agree on the type and
+method of what the reasoner derives: a role chain gives the derived statement the logic as its method (for
+example `amt:ProductLogic`) and the common type of its antecedents, or `fw:FuzzinessWobbliness` if they differ
+(a statement without type counts as `fw:Vagueness`); an inverse takes the type of the statement it comes from
+and has no method; of several paths to the same pair the one with the highest weight wins.
 
 """
 
@@ -363,9 +373,11 @@ from them by `py/weights.py` (see [Weights](weights.html)). Two models are run o
 |---|---|---|---|---|---|---|
 {hx}
 
-The generated file is `dist/chains.ttl`. The carrier-centre statements are inherited from the potter: they
-carry the same weight and type as the potter-centre statements, and AND or OR is not in the list for that
-relation (see question 11 of the [Review](review.html)).
+The generated file is `dist/chains.ttl`; `dist/chains-with-model.ttl` adds the ontology and can be run with
+the [AMT runner](https://github.com/alpaca-fair-framework/amt-runner) (`python run_amt.py dist/chains-with-model.ttl`).
+The carrier-centre statements are inherited from the potter: they carry the same weight and type as the
+potter-centre statements, and AND or OR is not in the list for that relation (see question 11 of the
+[Review](review.html)).
 
 ## Derived degrees
 

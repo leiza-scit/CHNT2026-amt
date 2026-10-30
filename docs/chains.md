@@ -37,30 +37,32 @@ Source: [PNG](diagrams/05_chains.png) · drawn by `py/step_diagrams.py` from the
 
 | From | Role | To | Weight | FW type | Pattern | Expected on the relation |
 |---|---|---|---|---|---|---|
-| Carrier 103585 | `hasProductionCentre` | Pfaffenhofen | 0.5 | VagueValue | `or` | no |
-| Carrier 103585 | `hasProductionCentre` | Westerndorf | 0.5 | VagueValue | `or` | no |
-| Carrier 153340 | `hasProductionCentre` | Kräherwald | 1 | VagueValue | `and` | no |
-| Carrier 153340 | `hasProductionCentre` | Rheinzabern | 1 | VagueValue | `and` | no |
-| Carrier 153346 | `hasProductionCentre` | Kräherwald | 1 | VagueValue | `and` | no |
-| Carrier 153346 | `hasProductionCentre` | Rheinzabern | 1 | VagueValue | `and` | no |
-| Carrier 211974 | `hasProductionCentre` | La Graufesenque | 0.5 | FuzzinessWobblinessValue | `q+and` | no |
-| Carrier 211974 | `hasProductionCentre` | Le Rozier | 0.5 | FuzzinessWobblinessValue | `q+and` | no |
-| Carrier 103585 | `hasType` | Potform 18/31 | 0.5 | UncertainValue | `q` | yes |
-| Carrier 153340 | `hasType` | Potform 31 | 0.5 | UncertainValue | `q` | yes |
-| Carrier 153346 | `hasType` | Potform 32 | 0.5 | UncertainValue | `q` | yes |
-| Carrier 211974 | `hasType` | Potform 24 | 0.33 | VagueValue | `or` | yes |
-| Carrier 211974 | `hasType` | Potform 27 | 0.33 | VagueValue | `or` | yes |
-| Carrier 211974 | `hasType` | Potform 33 | 0.33 | VagueValue | `or` | yes |
-| Onnio- | `worksAt` | Pfaffenhofen | 0.5 | VagueValue | `or` | yes |
-| Onnio- | `worksAt` | Westerndorf | 0.5 | VagueValue | `or` | yes |
-| Ve- i | `worksAt` | La Graufesenque | 0.5 | FuzzinessWobblinessValue | `q+and` | yes |
-| Ve- i | `worksAt` | Le Rozier | 0.5 | FuzzinessWobblinessValue | `q+and` | yes |
-| Vitalis viii | `worksAt` | Kräherwald | 1 | VagueValue | `and` | yes |
-| Vitalis viii | `worksAt` | Rheinzabern | 1 | VagueValue | `and` | yes |
+| Carrier 103585 | `hasProductionCentre` | Pfaffenhofen | 0.5 | Vagueness | `or` | no |
+| Carrier 103585 | `hasProductionCentre` | Westerndorf | 0.5 | Vagueness | `or` | no |
+| Carrier 153340 | `hasProductionCentre` | Kräherwald | 1 | Vagueness | `and` | no |
+| Carrier 153340 | `hasProductionCentre` | Rheinzabern | 1 | Vagueness | `and` | no |
+| Carrier 153346 | `hasProductionCentre` | Kräherwald | 1 | Vagueness | `and` | no |
+| Carrier 153346 | `hasProductionCentre` | Rheinzabern | 1 | Vagueness | `and` | no |
+| Carrier 211974 | `hasProductionCentre` | La Graufesenque | 0.5 | FuzzinessWobbliness | `q+and` | no |
+| Carrier 211974 | `hasProductionCentre` | Le Rozier | 0.5 | FuzzinessWobbliness | `q+and` | no |
+| Carrier 103585 | `hasType` | Potform 18/31 | 0.5 | Uncertainty | `q` | yes |
+| Carrier 153340 | `hasType` | Potform 31 | 0.5 | Uncertainty | `q` | yes |
+| Carrier 153346 | `hasType` | Potform 32 | 0.5 | Uncertainty | `q` | yes |
+| Carrier 211974 | `hasType` | Potform 24 | 0.33 | Vagueness | `or` | yes |
+| Carrier 211974 | `hasType` | Potform 27 | 0.33 | Vagueness | `or` | yes |
+| Carrier 211974 | `hasType` | Potform 33 | 0.33 | Vagueness | `or` | yes |
+| Onnio- | `worksAt` | Pfaffenhofen | 0.5 | Vagueness | `or` | yes |
+| Onnio- | `worksAt` | Westerndorf | 0.5 | Vagueness | `or` | yes |
+| Ve- i | `worksAt` | La Graufesenque | 0.5 | FuzzinessWobbliness | `q+and` | yes |
+| Ve- i | `worksAt` | Le Rozier | 0.5 | FuzzinessWobbliness | `q+and` | yes |
+| Vitalis viii | `worksAt` | Kräherwald | 1 | Vagueness | `and` | yes |
+| Vitalis viii | `worksAt` | Rheinzabern | 1 | Vagueness | `and` | yes |
 
-The generated file is `dist/chains.ttl`. The carrier-centre statements are inherited from the potter: they
-carry the same weight and type as the potter-centre statements, and AND or OR is not in the list for that
-relation (see question 11 of the [Review](review.html)).
+The generated file is `dist/chains.ttl`; `dist/chains-with-model.ttl` adds the ontology and can be run with
+the [AMT runner](https://github.com/alpaca-fair-framework/amt-runner) (`python run_amt.py dist/chains-with-model.ttl`).
+The carrier-centre statements are inherited from the potter: they carry the same weight and type as the
+potter-centre statements, and AND or OR is not in the list for that relation (see question 11 of the
+[Review](review.html)).
 
 ## Derived degrees
 

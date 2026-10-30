@@ -176,7 +176,7 @@ def figure_full_semantics(model):
 
 
 # ── figure 05: three real chains ─────────────────────────────────────────────
-TYPE_TAG = {"UncertainValue": "U", "VagueValue": "V", "FuzzinessWobblinessValue": "FW", None: ""}
+TYPE_TAG = {"Uncertainty": "U", "Vagueness": "V", "FuzzinessWobbliness": "FW", None: ""}
 COLX = {"pf": 2.8, "ic": 8.8, "pc": 14.8, "ae": 20.6}
 PITCH = 2.1
 
@@ -240,7 +240,7 @@ def figure_chains(res):
         top -= h
     legend(ax, 0.0, 0.7, [("solid", "asserted, weight + type"), ("red", "derived (product logic)"),
                           ("reddashed", "derived Potform>>Centre")], gap=7.6)
-    ax.text(0.0, 0.15, "Type: U uncertain (?), V vague (AND / OR), FW fuzzy/wobbly (? with AND / OR). "
+    ax.text(0.0, 0.15, "Type: U uncertainty (?), V vagueness (AND / OR), FW fuzziness-wobbliness (? with AND / OR); no tag = certain. "
             "M1: carrier-centre asserted; M2: derived from the actor.", fontsize=8.5, color="#475569", va="center")
     save(fig, "05_chains")
 

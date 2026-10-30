@@ -1,4 +1,4 @@
-"""The degree of connection (amt:weight) and the FW type of a vague or uncertain source string.
+"""The degree of connection and the FW type of a vague or uncertain source string.
 
 Rule of the source paper (Thiery, Mees, Tolle and Wigg-Wolf 2021, section 4):
 
@@ -12,19 +12,22 @@ Rule of the source paper (Thiery, Mees, Tolle and Wigg-Wolf 2021, section 4):
 The weight is stored with two decimals, as in the paper (one in three is 0.33).
 A string that mixes AND and OR is not covered by the rule and raises ValueError.
 
-Hextuple. An AMT statement is a reified quadruple (subject, predicate, object, amt:weight).
-Two more elements make it a hextuple: amt:type, the kind of imprecision (a class of the FW
-ontology) and amt:method, how the weight was obtained (a resource of the FW ontology that
-describes this very rule). Both are proposals until they are agreed in the FW ontology:
+Hextuple. An AMT statement is a reified quadruple (subject, predicate, object, weight). The FW
+ontology (http://w3id.org/fw_ontology/) adds two more elements: fw:hasType, the kind of
+imprecision (one of the individuals fw:Uncertainty, fw:Vagueness, fw:FuzzinessWobbliness), and
+fw:hasMethod, how the weight was obtained (here fw:EqualShareRule, which describes this very rule).
+The source string itself is kept as fw:TextEvidence (fw:sourceString) and linked with
+fw:derivedFrom; the entities of one string share one evidence node.
 
-    statement                  FW type (amt:type)                       pattern
+    statement                  FW type (fw:hasType)                     pattern
     -------------------------  ---------------------------------------  -------
-    no ?, no AND, no OR        none (a certain statement)               certain
-    ? only                     fw:UncertainValue                        q
-    OR (several), no ?         fw:VagueValue                            or
-    AND (several), no ?        fw:VagueValue                            and
-    ? with OR                  fw:FuzzinessWobblinessValue              q+or
-    ? with AND                 fw:FuzzinessWobblinessValue              q+and
+    no ?, no AND, no OR        none: AMT reads a missing type as        certain
+                               fw:Vagueness (the default)
+    ? only                     fw:Uncertainty                           q
+    OR (several), no ?         fw:Vagueness                             or
+    AND (several), no ?        fw:Vagueness                             and
+    ? with OR                  fw:FuzzinessWobbliness                   q+or
+    ? with AND                 fw:FuzzinessWobbliness                   q+and
 
 Which patterns occur is a property of the relation, not of the string. CONTEXTS lists, per
 relation, the patterns the data owners expect; anything else is flagged (`listed` is False).
@@ -46,9 +49,12 @@ from mini_amt_utils import DIST, ROOT  # noqa: E402
 CASES = ROOT / "data" / "weight-cases.csv"
 
 FW = "http://w3id.org/fw_ontology/"                      # namespace of the FW ontology
-FW_TYPE = {"q": "UncertainValue", "or": "VagueValue", "and": "VagueValue",
-           "q+or": "FuzzinessWobblinessValue", "q+and": "FuzzinessWobblinessValue"}
-FW_METHOD = "ReciprocalPossibilityWeight"                 # proposal; see ontology/fw-method-draft.ttl
+UNCERTAINTY, VAGUENESS, FUZZINESS_WOBBLINESS = "Uncertainty", "Vagueness", "FuzzinessWobbliness"
+FW_TYPE = {"q": UNCERTAINTY, "or": VAGUENESS, "and": VAGUENESS,
+           "q+or": FUZZINESS_WOBBLINESS, "q+and": FUZZINESS_WOBBLINESS}
+FW_METHOD = "EqualShareRule"                              # fw:EqualShareRule in the FW ontology
+# fw:implementedBy of fw:EqualShareRule: where the rule is implemented and tested
+IMPLEMENTED_BY = "https://github.com/leiza-scit/CHNT2026-amt/blob/main/py/weights.py"
 
 # patterns expected per relation (domain--range), as stated by the data owners
 CONTEXTS = {
@@ -81,6 +87,7 @@ class Statement:
 
     @property
     def fw_type(self) -> str | None:
+        """The local name of the fw:hasType individual; None for a certain statement (AMT default: Vagueness)."""
         return FW_TYPE.get(self.pattern)
 
 
@@ -102,17 +109,18 @@ def listed(st: Statement, context: str) -> bool:
 
 
 def edges_for(text: str, context: str) -> list[dict]:
-    """One hextuple payload per entity: what amt:weight, amt:type and amt:method must carry."""
+    """One hextuple payload per entity: what the weight, fw:hasType, fw:hasMethod and the evidence must carry."""
     st = parse(text)
-    return [{"entity": e, "weight": st.weight, "type": st.fw_type, "method": FW_METHOD,
+    return [{"entity": e, "weight": st.weight, "type": st.fw_type, "method": FW_METHOD, "source": text,
              "pattern": st.pattern, "listed": listed(st, context)} for e in st.entities]
 
 
 def reconstruct(edges: list[dict]) -> str:
-    """Rebuild the source string from the edges of one statement (the round trip).
+    """Rebuild the source string from the edges of one statement, without the evidence.
 
     Only weight, type and the number of edges are used. Lost on the way, and therefore not
-    reproduced: the order of the entities (they come back sorted) and the exact spelling.
+    reproduced: the order of the entities (they come back sorted) and the exact spelling. This is
+    the counter-check for the evidence node, which keeps the string exactly (see step chains).
     """
     n, w, t = len(edges), edges[0]["weight"], edges[0]["type"]
     names = sorted(e["entity"] for e in edges)

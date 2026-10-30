@@ -1,0 +1,17 @@
+@prefix fw: <http://w3id.org/fw_ontology/> .
+
+# =============================================================================
+# One triple for the FW ontology (caa-datadragons/FW_Ontology)
+# =============================================================================
+#
+# fw:EqualShareRule in the FW ontology reads the AND / OR / '?' form of a source
+# string. Its fw:implementedBy is still open ("follows once the code is
+# published"). The rule is implemented and tested in py/weights.py of this
+# repository (self-test: python py/weights.py, 17 cases).
+#
+# Nothing in this repository reads this file; it is the statement to add to the
+# FW ontology, kept here so that the IRI has one place of origin. Use a release
+# or the software DOI instead of the branch once there is one (see PRIMER, Teil D).
+# =============================================================================
+
+fw:EqualShareRule fw:implementedBy <https://github.com/leiza-scit/CHNT2026-amt/blob/main/py/weights.py> .

@@ -25,42 +25,47 @@ not covered. Cases (checked by the self-test, `python py/weights.py`):
 | String | Relation | Entities | ? | Possibilities | Weight | FW type | Expected on the relation |
 |---|---|---|---|---|---|---|---|
 | `Rheinzabern` | `actor--productioncentre` | 1 | 0 | 1 | 1.0 | - | yes |
-| `Rheinzabern?` | `actor--productioncentre` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
-| `Kräherwald and Rheinzabern` | `actor--productioncentre` | 2 | 0 | 1 | 1.0 | VagueValue | yes |
-| `Kräherwald and Rheinzabern?` | `actor--productioncentre` | 2 | 1 | 1 | 0.5 | FuzzinessWobblinessValue | yes |
-| `Pfaffenhofen or Westerndorf` | `actor--productioncentre` | 2 | 0 | 2 | 0.5 | VagueValue | yes |
-| `Pfaffenhofen or Westerndorf?` | `actor--productioncentre` | 2 | 1 | 2 | 0.33 | FuzzinessWobblinessValue | no |
-| `Heiligenberg and Ittenwiller and Kräherwald and Rheinzabern and Waiblingen-Beinstein?` | `actor--productioncentre` | 5 | 1 | 1 | 0.5 | FuzzinessWobblinessValue | yes |
-| `15/17 or 18 or 18/31` | `informationcarrier--potform` | 3 | 0 | 3 | 0.33 | VagueValue | yes |
-| `24 or 27 or 33` | `informationcarrier--potform` | 3 | 0 | 3 | 0.33 | VagueValue | yes |
-| `33 or 38?` | `informationcarrier--potform` | 2 | 1 | 2 | 0.33 | FuzzinessWobblinessValue | yes |
-| `dish or bowl?` | `informationcarrier--potform` | 2 | 1 | 2 | 0.33 | FuzzinessWobblinessValue | yes |
-| `32?` | `informationcarrier--potform` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
-| `18/31?` | `informationcarrier--potform` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
-| `Lezoux?` | `informationcarrier--productioncentre` | 1 | 1 | 1 | 0.5 | UncertainValue | yes |
-| `Kräherwald and Rheinzabern` | `informationcarrier--productioncentre` | 2 | 0 | 1 | 1.0 | VagueValue | no |
+| `Rheinzabern?` | `actor--productioncentre` | 1 | 1 | 1 | 0.5 | Uncertainty | yes |
+| `Kräherwald and Rheinzabern` | `actor--productioncentre` | 2 | 0 | 1 | 1.0 | Vagueness | yes |
+| `Kräherwald and Rheinzabern?` | `actor--productioncentre` | 2 | 1 | 1 | 0.5 | FuzzinessWobbliness | yes |
+| `Pfaffenhofen or Westerndorf` | `actor--productioncentre` | 2 | 0 | 2 | 0.5 | Vagueness | yes |
+| `Pfaffenhofen or Westerndorf?` | `actor--productioncentre` | 2 | 1 | 2 | 0.33 | FuzzinessWobbliness | no |
+| `Heiligenberg and Ittenwiller and Kräherwald and Rheinzabern and Waiblingen-Beinstein?` | `actor--productioncentre` | 5 | 1 | 1 | 0.5 | FuzzinessWobbliness | yes |
+| `15/17 or 18 or 18/31` | `informationcarrier--potform` | 3 | 0 | 3 | 0.33 | Vagueness | yes |
+| `24 or 27 or 33` | `informationcarrier--potform` | 3 | 0 | 3 | 0.33 | Vagueness | yes |
+| `33 or 38?` | `informationcarrier--potform` | 2 | 1 | 2 | 0.33 | FuzzinessWobbliness | yes |
+| `dish or bowl?` | `informationcarrier--potform` | 2 | 1 | 2 | 0.33 | FuzzinessWobbliness | yes |
+| `32?` | `informationcarrier--potform` | 1 | 1 | 1 | 0.5 | Uncertainty | yes |
+| `18/31?` | `informationcarrier--potform` | 1 | 1 | 1 | 0.5 | Uncertainty | yes |
+| `Lezoux?` | `informationcarrier--productioncentre` | 1 | 1 | 1 | 0.5 | Uncertainty | yes |
+| `Kräherwald and Rheinzabern` | `informationcarrier--productioncentre` | 2 | 0 | 1 | 1.0 | Vagueness | no |
+| `Lezoux or Vichy ?` | `actor--productioncentre` | 2 | 1 | 2 | 0.33 | FuzzinessWobbliness | no |
+| `South Gaul?` | `informationcarrier--productioncentre` | 1 | 1 | 1 | 0.5 | Uncertainty | yes |
 
 The rule was checked against the CHNT exports: every one of the 95,819 existing centre edges carries
 the weight the rule gives for its string.
 
 ## From quadruple to hextuple
 
-An AMT statement is a reified quadruple: `rdf:subject`, `rdf:predicate`, `rdf:object`, `amt:weight`.
-Two more elements make it a hextuple:
+An AMT statement is a reified quadruple: `rdf:subject`, `rdf:predicate`, `rdf:object`, `amt:weight`. The
+[FW ontology](https://github.com/caa-datadragons/FW_Ontology) (`http://w3id.org/fw_ontology/`, prefix `fw:`)
+adds two elements, which make it a hextuple, and an optional link to the source:
 
 | Element | Carries | Value |
 |---|---|---|
-| `amt:type` | the kind of imprecision | a class of the [FW ontology](https://github.com/caa-datadragons/FW_Ontology): `nfdi_fw:UncertainValue`, `nfdi_fw:VagueValue` or `nfdi_fw:FuzzinessWobblinessValue`; absent for a certain statement |
-| `amt:method` | how the weight was obtained | `nfdi_fw:ReciprocalPossibilityWeight`, a resource that describes the rule above ([draft](https://github.com/leiza-scit/CHNT2026-amt/blob/main/ontology/fw-method-draft.ttl)) |
+| `fw:hasDegreeOfConnection` | the weight; the same as `amt:weight` (the AMT engine reads both) | `0.33` |
+| `fw:hasType` | the kind of fuzziness | an individual of `fw:FW_Type`: `fw:Uncertainty`, `fw:Vagueness` or `fw:FuzzinessWobbliness`; absent for a certain statement, which AMT reads as `fw:Vagueness` |
+| `fw:hasMethod` | how the weight was obtained | `fw:EqualShareRule`, the rule above; `fw:implementedBy` is meant to point to [`py/weights.py`](https://github.com/leiza-scit/CHNT2026-amt/blob/main/py/weights.py) ([triple](https://github.com/leiza-scit/CHNT2026-amt/blob/main/ontology/fw-implemented-by.ttl)) |
+| `fw:derivedFrom` | what the weight rests on (optional) | a `fw:TextEvidence` node with the source string (`fw:sourceString`); all statements of one string share the node |
 
 The type follows from the pattern of the string:
 
 | Pattern | Source | FW type |
 |---|---|---|
-| `q` | question mark only | `UncertainValue` |
-| `or` | OR, no question mark | `VagueValue` |
-| `and` | AND, no question mark | `VagueValue` |
-| `q+or`, `q+and` | question mark with OR or AND | `FuzzinessWobblinessValue` |
+| `q` | question mark only | `fw:Uncertainty` |
+| `or` | OR, no question mark | `fw:Vagueness` |
+| `and` | AND, no question mark | `fw:Vagueness` |
+| `q+or`, `q+and` | question mark with OR or AND | `fw:FuzzinessWobbliness` |
 
 Which patterns are expected depends on the relation (the others are flagged, not rejected):
 
@@ -70,9 +75,16 @@ Which patterns are expected depends on the relation (the others are flagged, not
 | `informationcarrier--potform` | `or`, `q`, `q+or` |
 | `informationcarrier--productioncentre` | `q` |
 
-Weight, type and the number of edges of a statement are enough to rebuild the source string: the
-round trip is lossless except for the order of the entities and the spelling. The names `amt:type`
-and `amt:method` are proposals until they are agreed with the AMT vocabulary.
+The source string is kept exactly in the evidence node, and the step `chains` reads `dist/chains.ttl` back
+and checks that every statement leads to its string, with the weight, type and method the rule gives. As a
+counter-check, weight, type and the number of edges alone rebuild the string up to the order of the entities
+and the spelling.
+
+**Derived statements.** AMT.engine 0.6.0 and the reference reasoner of this repository agree on the type and
+method of what the reasoner derives: a role chain gives the derived statement the logic as its method (for
+example `amt:ProductLogic`) and the common type of its antecedents, or `fw:FuzzinessWobbliness` if they differ
+(a statement without type counts as `fw:Vagueness`); an inverse takes the type of the statement it comes from
+and has no method; of several paths to the same pair the one with the highest weight wins.
 
 ## Is the weight the same in both directions?
 

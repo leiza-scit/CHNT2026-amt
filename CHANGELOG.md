@@ -2,6 +2,27 @@
 
 All notable changes are recorded here. Each entry says **what** changed and **why**; the German *Warum* lines are the short rationale for the team.
 
+## [0.4.0] - FW terms, evidence, check against AMT.engine 0.6.0
+
+The hextuples use the terms the FW ontology fixed on 2026-10-30 (`caa-datadragons/FW_Ontology`, `15ae05f`); the proposals `amt:type`, `amt:method` and `nfdi_fw:ReciprocalPossibilityWeight` are gone. AMT.engine 0.6.0 reads the result.
+
+### Added
+- **Source string as evidence**: every statement points with `fw:derivedFrom` to a `fw:TextEvidence` node holding the string (`fw:sourceString`). The statements of one string share the node. *Warum:* Die Zeichenkette bleibt exakt erhalten (Reihenfolge, Schreibweise); die Rekonstruktion aus Gewicht und Typ ist nur noch die Gegenprobe.
+- **Round-trip check** in step `chains`: `dist/chains.ttl` is read back; every statement must lead to its string, and weight, type and method must be the ones the rule gives.
+- **Check against AMT.engine 0.6.0** in step `chains`: the three runs (M1 product, M1 Goedel, M2 product) are repeated with the engine and compared edge by edge, type and method included (340 edges agree). It needs 0.6.0 or newer and is skipped with a note otherwise. The SHACL shapes of the engine are run as information: M2 conforms, M1 has four violations (`mini:reaches` and `mini:reachedBy` have no `rdfs:domain` and `rdfs:range`; open, see PRIMER).
+- **`dist/chains-with-model.ttl`**: ontology M1 and the data in one file for the AMT runner and the Explorer.
+- **Type and method of derived edges** in `py/reference_reasoner.py`, written from the rules of AMT.engine 0.6.0: a role chain gives its logic as method and the common type of its antecedents (`fw:FuzzinessWobbliness` if they differ); an inverse or a subsumption takes the type and has no method; a missing type counts as `fw:Vagueness`.
+- Two cases from the FW ontology in `data/weight-cases.csv` (`Lezoux or Vichy ?` = 0.33, `South Gaul?` = 0.5); 17 cases.
+- `ontology/fw-implemented-by.ttl`: the triple `fw:EqualShareRule fw:implementedBy <py/weights.py>` that the FW ontology still lacks.
+
+### Changed
+- `dist/chains.ttl` writes `fw:hasDegreeOfConnection` (the same as `amt:weight`), `fw:hasType` with the individuals `fw:Uncertainty`, `fw:Vagueness`, `fw:FuzzinessWobbliness`, and `fw:hasMethod fw:EqualShareRule`. A certain statement has no type; AMT reads that as `fw:Vagueness`. *Warum:* So nennt die FW-Ontologie die Begriffe; Karstens AFE-Daten und Mini-AMT sprechen jetzt dieselbe Sprache.
+- The type of AND and OR strings is `fw:Vagueness` (was `VagueValue`), of `?` strings `fw:Uncertainty` (was `UncertainValue`), of both `fw:FuzzinessWobbliness`. Which pattern gives which type is unchanged.
+- Pages *Weights* and *Chains*, figure 05, `README.md`, `requirements.txt` (the optional engine line points to `alpaca-fair-framework/amt-engine`, tag `v0.6.0`).
+
+### Removed
+- `ontology/fw-method-draft.ttl`: the FW ontology has `fw:EqualShareRule`.
+
 ## [0.3.0] - Weight rule, hextuple, three real chains
 
 ### Added
