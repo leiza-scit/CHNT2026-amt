@@ -1,0 +1,13 @@
+# mini-amt - dependencies
+#
+# rdflib and matplotlib are all that main.py needs. The real AMT reasoner is
+# optional: if it is installed, step "reason" runs it and cross-checks its
+# result against the independent reference reasoner in py/.
+#
+#   pip install -r requirements.txt
+
+rdflib>=7.0        # parse ontology + toy data, read axioms
+matplotlib>=3.8    # the diagrams (Mermaid-like, drawn by py/diagram_kit.py)
+
+# Optional: the AMT engine (https://github.com/n4o-rse/amt-engine)
+# amt-engine @ git+https://github.com/n4o-rse/amt-engine.git

@@ -1,0 +1,264 @@
+@prefix amt:  <http://academic-meta-tool.xyz/vocab#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix mini: <http://example.org/mini-amt/> .
+
+# =============================================================================
+# Mini-AMT domain model: Potform -- InformationCarrier -- ProductionCentre -- Actor
+# =============================================================================
+#
+# A deliberately small AMT domain model (AMT vocabulary: Concepts, Roles,
+# Axioms). It contains no instances; see data/toy-chain.ttl for an abstract
+# demonstration chain.
+#
+# Every role carries two annotations that the documentation is generated from:
+#   skos:definition  what the role says
+#   skos:scopeNote   what it does NOT say (the limit that matters archaeologically)
+#
+# Placeholders, to be replaced later:
+#   - the namespace mini: (http://example.org/mini-amt/) is not a real IRI;
+#   - the logic operator of the three role chains (amt:GoedelLogic) is a
+#     placeholder. How the degree of connection is calculated is decided
+#     later and only needs a change of the amt:logic triples below;
+#   - the role names are proposals, except hasType / isTypeOf (agreed with
+#     Allard Mees for the Potform case).
+#
+# Reading guide
+#   chain direction   Potform  ->  InformationCarrier  ->  ProductionCentre  ->  Actor
+#   asserted roles    follow the source model (the three lado:hasAMT links):
+#                     InformationCarrier -> Potform, InformationCarrier ->
+#                     ProductionCentre, Actor -> ProductionCentre
+#   inverse roles     are needed because two of the three asserted roles point
+#                     against the chain direction; AMT chains compose edges
+#                     head-to-tail, so without inverses nothing composes
+#   derived roles     (">>") are produced by role chains. They have inverses
+#                     ("<<") so that every association can be read from both
+#                     ends, and are subsumed by the generic role mini:reaches
+#   weights           an inverse edge carries the same amt:weight as its
+#                     antecedent (see the "Weights" page of the documentation)
+# =============================================================================
+
+<http://example.org/mini-amt> a owl:Ontology ;
+    rdfs:label "Mini-AMT domain model"@en ;
+    rdfs:comment "Potform - InformationCarrier - ProductionCentre - Actor, with inverse roles and role-chain reasoning."@en .
+
+
+# ── 1. Concepts ──────────────────────────────────────────────────────────────
+
+mini:Potform a amt:Concept ;
+    rdfs:label "Potform" ;
+    amt:placeholder "Potform" ;
+    rdfs:comment "Vessel form or type (the typological class of an information carrier)."@en .
+
+mini:InformationCarrier a amt:Concept ;
+    rdfs:label "InformationCarrier" ;
+    amt:placeholder "Information carrier" ;
+    rdfs:comment "The object carrying the information (e.g. a stamped vessel or sherd)."@en .
+
+mini:ProductionCentre a amt:Concept ;
+    rdfs:label "ProductionCentre" ;
+    amt:placeholder "Production centre" ;
+    rdfs:comment "Place of production (e.g. a kiln site)."@en .
+
+mini:Actor a amt:Concept ;
+    rdfs:label "Actor" ;
+    amt:placeholder "Actor" ;
+    rdfs:comment "Person working at a production centre (the source model's ActorEntity and Actor are collapsed here)."@en .
+
+
+# ── 2. Roles: asserted (direction of the source data) ───────────────────────
+
+mini:hasType a amt:Role ;
+    rdfs:label "hasType" ;
+    rdfs:domain mini:InformationCarrier ;
+    rdfs:range  mini:Potform ;
+    skos:definition "The information carrier is of this potform."@en ;
+    skos:scopeNote  "A classification of the carrier. It does not say where the potform was produced."@en .
+
+mini:hasProductionCentre a amt:Role ;
+    rdfs:label "hasProductionCentre" ;
+    rdfs:domain mini:InformationCarrier ;
+    rdfs:range  mini:ProductionCentre ;
+    skos:definition "The information carrier is attributed to this production centre, i.e. it is assumed to have been produced there."@en ;
+    skos:scopeNote  "An attribution, not a proof. Its weight is the degree to which the attribution holds."@en .
+
+mini:worksAt a amt:Role ;
+    rdfs:label "worksAt" ;
+    rdfs:domain mini:Actor ;
+    rdfs:range  mini:ProductionCentre ;
+    skos:definition "The actor worked at this production centre."@en ;
+    skos:scopeNote  "Says nothing about when. The period in which the actor was active is not part of the role."@en .
+
+
+# ── 3. Roles: inverses of the asserted roles ────────────────────────────────
+
+mini:isTypeOf a amt:Role ;
+    rdfs:label "isTypeOf" ;
+    rdfs:domain mini:Potform ;
+    rdfs:range  mini:InformationCarrier ;
+    skos:definition "The potform is the type of this information carrier. Inverse of hasType (agreed with Allard Mees)."@en ;
+    skos:scopeNote  "The same statement as hasType, read from the potform: one potform is the type of many carriers."@en .
+
+mini:isProductionCentreOf a amt:Role ;
+    rdfs:label "isProductionCentreOf" ;
+    rdfs:domain mini:ProductionCentre ;
+    rdfs:range  mini:InformationCarrier ;
+    skos:definition "The production centre is the attributed place of production of this information carrier. Inverse of hasProductionCentre."@en ;
+    skos:scopeNote  "Not used by a role chain; kept so that every role has its inverse."@en .
+
+mini:hasWorker a amt:Role ;
+    rdfs:label "hasWorker" ;
+    rdfs:domain mini:ProductionCentre ;
+    rdfs:range  mini:Actor ;
+    skos:definition "This actor worked at the production centre. Inverse of worksAt."@en ;
+    skos:scopeNote  "The same statement as worksAt, read from the centre. No time is implied."@en .
+
+
+# ── 4. Roles: derived (">>") and their inverses ("<<") ──────────────────────
+# Each ">>" role is the consequent of a role chain (section 6). Its weight is
+# the logic operator applied to the weights of the chain (placeholder: minimum).
+# "Associated with" always means: connected through the chain, nothing more.
+
+mini:potformToCentre a amt:Role ;
+    rdfs:label "potformToCentre" ;
+    rdfs:domain mini:Potform ;
+    rdfs:range  mini:ProductionCentre ;
+    skos:definition "The potform is associated with the production centre: a carrier of this type is attributed to that centre."@en ;
+    skos:scopeNote  "An association through at least one carrier. It does not say that the centre produced all, or most, carriers of the potform."@en .
+
+mini:centreToPotform a amt:Role ;
+    rdfs:label "centreToPotform" ;
+    rdfs:domain mini:ProductionCentre ;
+    rdfs:range  mini:Potform ;
+    skos:definition "The production centre is associated with the potform: a carrier attributed to the centre is of this type. Inverse of potformToCentre."@en ;
+    skos:scopeNote  "Read from the centre, this is its attested range of forms as far as carriers are attributed to it. It is neither complete nor proportional."@en .
+
+mini:carrierToActor a amt:Role ;
+    rdfs:label "carrierToActor" ;
+    rdfs:domain mini:InformationCarrier ;
+    rdfs:range  mini:Actor ;
+    skos:definition "The information carrier is associated with the actor: the carrier is attributed to a centre at which the actor worked."@en ;
+    skos:scopeNote  "A shared-centre association, not an attribution of authorship. The time intervals of carrier and actor are not compared."@en .
+
+mini:actorToCarrier a amt:Role ;
+    rdfs:label "actorToCarrier" ;
+    rdfs:domain mini:Actor ;
+    rdfs:range  mini:InformationCarrier ;
+    skos:definition "The actor is associated with the information carrier: the actor worked at the centre to which the carrier is attributed. Inverse of carrierToActor."@en ;
+    skos:scopeNote  "Candidate carriers of the actor, not carriers the actor is known to have made."@en .
+
+mini:potformToActor a amt:Role ;
+    rdfs:label "potformToActor" ;
+    rdfs:domain mini:Potform ;
+    rdfs:range  mini:Actor ;
+    skos:definition "The potform is associated with the actor: a carrier of this type is attributed to a centre at which the actor worked."@en ;
+    skos:scopeNote  "The weakest of the three associations: three steps, two of them through the same centre. It does not say that the actor produced this potform."@en .
+
+mini:actorToPotform a amt:Role ;
+    rdfs:label "actorToPotform" ;
+    rdfs:domain mini:Actor ;
+    rdfs:range  mini:Potform ;
+    skos:definition "The actor is associated with the potform: the forms attested at the centre where the actor worked. Inverse of potformToActor."@en ;
+    skos:scopeNote  "A candidate repertoire of the actor, derived from the centre. It is not the actor's own repertoire."@en .
+
+mini:reaches a amt:Role ;
+    rdfs:label "reaches" ;
+    skos:definition "Generic derived role (>>): any of the three derived association roles. One query on it finds all of them."@en ;
+    skos:scopeNote  "Has no domain or range because it spans several concept pairs."@en .
+
+mini:reachedBy a amt:Role ;
+    rdfs:label "reachedBy" ;
+    skos:definition "Generic derived inverse role (<<). Inverse of reaches."@en ;
+    skos:scopeNote  "Has no domain or range because it spans several concept pairs."@en .
+
+
+# ── 5. Axioms: inverses ─────────────────────────────────────────────────────
+# Declared in the direction of the asserted or derived role. If data ever
+# arrives in the other direction, add the reverse axiom. The engine copies the
+# weight of the antecedent edge to the inverse edge.
+
+mini:INV_hasType a amt:InverseAxiom ;
+    rdfs:label "hasType <-> isTypeOf" ;
+    amt:antecedent mini:hasType ;
+    amt:inverse    mini:isTypeOf .
+
+mini:INV_hasProductionCentre a amt:InverseAxiom ;
+    rdfs:label "hasProductionCentre <-> isProductionCentreOf" ;
+    amt:antecedent mini:hasProductionCentre ;
+    amt:inverse    mini:isProductionCentreOf .
+
+mini:INV_worksAt a amt:InverseAxiom ;
+    rdfs:label "worksAt <-> hasWorker" ;
+    amt:antecedent mini:worksAt ;
+    amt:inverse    mini:hasWorker .
+
+mini:INV_potformToCentre a amt:InverseAxiom ;
+    rdfs:label "potformToCentre <-> centreToPotform" ;
+    amt:antecedent mini:potformToCentre ;
+    amt:inverse    mini:centreToPotform .
+
+mini:INV_carrierToActor a amt:InverseAxiom ;
+    rdfs:label "carrierToActor <-> actorToCarrier" ;
+    amt:antecedent mini:carrierToActor ;
+    amt:inverse    mini:actorToCarrier .
+
+mini:INV_potformToActor a amt:InverseAxiom ;
+    rdfs:label "potformToActor <-> actorToPotform" ;
+    amt:antecedent mini:potformToActor ;
+    amt:inverse    mini:actorToPotform .
+
+mini:INV_reaches a amt:InverseAxiom ;
+    rdfs:label "reaches <-> reachedBy" ;
+    amt:antecedent mini:reaches ;
+    amt:inverse    mini:reachedBy .
+
+
+# ── 6. Axioms: role chains (the three ">>" rules) ───────────────────────────
+# [Potform]--amt--[InformationCarrier]--amt--[ProductionCentre]   = [Potform]>>[ProductionCentre]
+# [InformationCarrier]--amt--[ProductionCentre]--amt--[Actor]     = [InformationCarrier]>>[Actor]
+# [Potform]--amt--[InformationCarrier]--amt--[ProductionCentre]--amt--[Actor] = [Potform]>>[Actor]
+#
+# The third chain is written out over the base roles (n-ary) rather than as
+# potformToCentre o hasWorker. For associative operators (Goedel, Product,
+# Einstein, Hamacher) both give the same degree; for the n-ary geometric mean
+# they do not, so the n-ary form is the one that means what it says.
+# amt:logic is a placeholder in all three.
+
+mini:RCA_potformToCentre a amt:RoleChainAxiom ;
+    rdfs:label "isTypeOf o hasProductionCentre -> potformToCentre" ;
+    amt:antecedents ( mini:isTypeOf mini:hasProductionCentre ) ;
+    amt:consequent  mini:potformToCentre ;
+    amt:logic       amt:GoedelLogic .
+
+mini:RCA_carrierToActor a amt:RoleChainAxiom ;
+    rdfs:label "hasProductionCentre o hasWorker -> carrierToActor" ;
+    amt:antecedents ( mini:hasProductionCentre mini:hasWorker ) ;
+    amt:consequent  mini:carrierToActor ;
+    amt:logic       amt:GoedelLogic .
+
+mini:RCA_potformToActor a amt:RoleChainAxiom ;
+    rdfs:label "isTypeOf o hasProductionCentre o hasWorker -> potformToActor" ;
+    amt:antecedents ( mini:isTypeOf mini:hasProductionCentre mini:hasWorker ) ;
+    amt:consequent  mini:potformToActor ;
+    amt:logic       amt:GoedelLogic .
+
+
+# ── 7. Axioms: subsumption under the generic ">>" ───────────────────────────
+
+mini:SUB_potformToCentre a amt:SubsumptionAxiom ;
+    rdfs:label "potformToCentre subsumed by reaches" ;
+    amt:subRole   mini:potformToCentre ;
+    amt:superRole mini:reaches .
+
+mini:SUB_carrierToActor a amt:SubsumptionAxiom ;
+    rdfs:label "carrierToActor subsumed by reaches" ;
+    amt:subRole   mini:carrierToActor ;
+    amt:superRole mini:reaches .
+
+mini:SUB_potformToActor a amt:SubsumptionAxiom ;
+    rdfs:label "potformToActor subsumed by reaches" ;
+    amt:subRole   mini:potformToActor ;
+    amt:superRole mini:reaches .

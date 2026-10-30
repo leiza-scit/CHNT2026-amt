@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+
+# reasoning output of main.py (step reason); docs/ is committed, dist/ is not
+dist/

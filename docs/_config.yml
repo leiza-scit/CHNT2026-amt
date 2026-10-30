@@ -1,0 +1,8 @@
+title: Mini-AMT
+description: A small AMT domain model for Potform, InformationCarrier, ProductionCentre and Actor, with role-chain reasoning (draft for archaeological review)
+markdown: kramdown
+kramdown:
+  input: GFM
+defaults:
+  - scope: { path: "" }
+    values: { layout: default }
