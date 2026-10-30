@@ -4,3 +4,5 @@ __pycache__/
 
 # reasoning output of main.py (step reason); docs/ is committed, dist/ is not
 dist/
+
+PATCH-README.md
